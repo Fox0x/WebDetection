@@ -17,9 +17,12 @@ app.config(function ($routeProvider) {
                 lazy: ['$ocLazyLoad', function ($ocLazyLoad) {
                     return $ocLazyLoad.load({
                         files: [
-                            'js/live/player.js',
+                            'js/live',
                             'js/live/image.js',
-                            'js/live/showForm.js']
+                            'js/live/player.js',
+                            'js/live/showForm.js',
+                            'js/live/detections.js'
+                        ]
                     });
                 }]
             }

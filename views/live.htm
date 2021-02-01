@@ -1,9 +1,9 @@
-<script src="js/live/image.js"></script>
 <div class="container">
     <div class="row">
         <!--PLAYER-->
         <div class="col-auto mt-4 ms-5 ps-2">
-            <video autoplay id="video" muted playsinline width="720" height="550"></video>
+            <video autoplay id="video" muted playsinline width="720" height="550">
+            </video>
         </div>
         <!--IMAGE LIST-->
         <div class="col-1 mt-4 mx-2 px-0" id="image-list">
@@ -53,6 +53,22 @@
                 <input class="m-1" type="text" placeholder="Second name">
                 <button type="button" class="btn btn-outline-success mx-auto">Send</button>
             </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3 d-inline-flex p-2 ms-5">
+            <!-- face_detector_selection_control -->
+            <select class="custom-select">
+                <option selected value="ssdMobileNetV1">ssdMobileNetV1</option>
+                <option value="tinyFaceDetector">tinyFaceDetector</option>
+            </select>
+        </div>
+        <div class="col-3 d-inline-flex p-2 my-auto">
+            <!-- minConf selection control-->
+            <label for="confidence">Min confidence</label>
+            <button type="button" class="btn"> - </button>
+            <input id="confidence" type="text" disabled value="0.8" style="width: 60px">
+            <button type="button" class="btn">+</button>
         </div>
     </div>
 </div>
