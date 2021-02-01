@@ -1,0 +1,30 @@
+.navbar {
+    background-color: #131516;
+    box-shadow: rgb(0, 0, 0) 0 10px 13px -7px, 5px 5px 15px 5px rgba(255, 255, 255, 0);
+}
+
+.btn-outline-secondary {
+    border-color: #1E2E5F !important;
+}
+
+.body {
+    background-color: #131516;
+}
+
+#video {
+    border-bottom: #901612 solid 10px;
+    box-shadow: rgb(0, 0, 0) 0 10px 13px -7px, 5px 5px 15px 5px rgba(255, 255, 255, 0);
+}
+
+#image-list input {
+    width: 100px;
+    height: 130px;
+}
+
+.btn-outline-success {
+    width: 80px;
+}
+.btn-outline-secondary {
+    margin: 5px;
+    height: 80%;
+}
