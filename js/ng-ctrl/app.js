@@ -4,6 +4,10 @@ app.controller('AppCtrl', ($scope) => {
 
 });
 
+app.controller('LiveCtrl', ($scope) => {
+
+})
+
 
 app.config(function ($routeProvider) {
     $routeProvider
@@ -13,9 +17,9 @@ app.config(function ($routeProvider) {
                 lazy: ['$ocLazyLoad', function ($ocLazyLoad) {
                     return $ocLazyLoad.load({
                         files: [
-                            'js/player.js',
-                            'js/image.js',
-                            'js/showForm.js']
+                            'js/live/player.js',
+                            'js/live/image.js',
+                            'js/live/showForm.js']
                     });
                 }]
             }
