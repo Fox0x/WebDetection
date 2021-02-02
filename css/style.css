@@ -30,6 +30,7 @@ canvas {
 .btn-outline-success {
     width: 80px;
 }
+
 .btn-outline-secondary {
     margin: 5px;
     height: 80%;
@@ -43,5 +44,27 @@ select {
 
 option {
     background: #131516;
+    color: #D9FFF5;
+}
+
+#confidence button {
+    background: transparent;
+    border: 0;
+    color: #D9FFF5;
+}
+
+#confidence input {
+    background: transparent;
+    color: #D9FFF5;
+    border: 0;
+    text-align: center;
+}
+
+#confidence p {
+    color: #D9FFF5;
+    margin-right: 20px;
+}
+
+#confidence i {
     color: #D9FFF5;
 }

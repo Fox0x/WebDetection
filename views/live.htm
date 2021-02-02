@@ -8,16 +8,16 @@
         <!--IMAGE LIST-->
         <div class="col-1 mt-4 mx-2 px-0" id="image-list">
             <!--Output image 1-->
-            <input onclick="showForm('form1');" alt="" id="outputImage1" src="img/user.png" type="image">
+            <input class="img-list-input" onclick="onClick(1);" alt="" id="outputImage1" src="img/user.png" type="image">
 
             <!--Output image 2-->
-            <input onclick="showForm('form2');" alt="" id="outputImage2" src="img/user.png" type="image">
+            <input class="img-list-input" onclick="onClick(2);" alt="" id="outputImage2" src="img/user.png" type="image">
 
             <!--Output image 3-->
-            <input onclick="showForm('form3');" alt="" id="outputImage3" src="img/user.png" type="image">
+            <input class="img-list-input" onclick="onClick(3);" alt="" id="outputImage3" src="img/user.png" type="image">
 
             <!--Output image 4-->
-            <input onclick="showForm('form4');" alt="" id="outputImage4" src="img/user.png" type="image">
+            <input class="img-list-input" onclick="onClick(4);" alt="" id="outputImage4" src="img/user.png" type="image">
         </div>
         <!--FORMS-->
         <div class="col-2 mt-4">
@@ -58,17 +58,17 @@
     <div class="row">
         <div class="col-3 d-inline-flex p-2 ms-5">
             <!-- face_detector_selection_control -->
-            <select class="custom-select">
+            <select class="custom-select" id="model">
                 <option selected value="ssdMobileNetV1">ssdMobileNetV1</option>
                 <option value="tinyFaceDetector">tinyFaceDetector</option>
             </select>
         </div>
-        <div class="col-3 d-inline-flex p-2 my-auto">
+        <div class="col-3 d-inline-flex p-2 my-auto" id="confidence">
             <!-- minConf selection control-->
-            <label for="confidence">Min confidence</label>
-            <button type="button" class="btn"> - </button>
-            <input id="confidence" type="text" disabled value="0.8" style="width: 60px">
-            <button type="button" class="btn">+</button>
+            <p>Min confidence</p>
+            <button onclick="decreaseConfidence()" type="button" class=""><span class="material-icons">remove_circle_outline</span></button>
+            <input id="confidenceOutput" type="text" disabled value="0.8" style="width: 60px">
+            <button onclick="increaseConfidence()" type="button" class=""><span class="material-icons">add_circle_outline</span></button>
         </div>
     </div>
 </div>

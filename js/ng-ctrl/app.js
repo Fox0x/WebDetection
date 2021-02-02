@@ -20,7 +20,7 @@ app.config(function ($routeProvider) {
                             'js/live',
                             'js/live/image.js',
                             'js/live/player.js',
-                            'js/live/showForm.js',
+                            'js/live/form.js',
                             'js/live/detections.js'
                         ]
                     });
