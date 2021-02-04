@@ -1,64 +1,60 @@
-let faceImages;
-let detections;
+'use strict';
+
+Promise.all([
+    console.log('Models start loading'),
+    faceapi.loadSsdMobilenetv1Model("..//models"),
+    faceapi.loadTinyFaceDetectorModel("..//models"),
+    console.log("Models are loaded")
+]).then(() => {
+    navigator.getUserMedia(
+        {video: {}},
+        stream => (document.getElementById('video').srcObject = stream),
+        err => console.error(err)
+    );
+}).then(onVideoLoaded);
+
+async function onVideoLoaded() {
+    document.getElementById('video').addEventListener('playing', event => {
+        const video = document.getElementById('video');
+        getDetections(video);
+    });
+}
+
 let minConfidence = 0.4;
 let options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 2});
 
-
-Promise.all([
-    faceapi.loadSsdMobilenetv1Model("..//models"),
-    faceapi.nets.faceLandmark68Net.loadFromUri("..//models"),
-    faceapi.nets.faceRecognitionNet.loadFromUri("..//models"),
-    faceapi.loadTinyFaceDetectorModel("..//models"),
-]).then(drawDetections);
-
-function drawDetections() {
+function changeModel () {
     let model = document.getElementById('model');
-    model.addEventListener('change', event => {
-        model.value === 'tinyFaceDetector' ?
-            options = new faceapi.TinyFaceDetectorOptions({inputSize: 160, minConfidence}) :
-            options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 2});
-        console.log(options._name)
-    });
-
-    const video = document.getElementById("video");
-    video.addEventListener("playing", () => {
-        const canvas = faceapi.createCanvasFromMedia(video);
-        document.body.append(canvas);
-        const displaySize = {width: video.width, height: video.height};
-        faceapi.matchDimensions(canvas, displaySize);
-
-
-        //every 100ms =>
-        setInterval(async () => {
-            //get detections
-            detections = await faceapi
-                .detectAllFaces(video, options)
-                .withFaceLandmarks()
-                .withFaceDescriptors();
-            //clear canvas
-            canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-            if (detections.length > 0) {
-                //resize canvas
-                const resizedDetections = faceapi.resizeResults(detections, displaySize);
-                //draw new canvas
-                faceapi.draw.drawDetections(canvas, resizedDetections);
-                detections.forEach(e => {
-
-                });
-
-                if (detections[0].detection.score > parseFloat(document.getElementById('confidenceOutput').value)) {
-                    await extractFaceFromBox(video, detections[0].detection.box);
-                    await addToImageList();
-                }
-            }
-
-        }, 100);
-    });
+    model.value === 'tinyFaceDetector' ?
+        options = new faceapi.TinyFaceDetectorOptions({inputSize: 160, minConfidence}) :
+        options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 2});
+    console.log(options._name)
 }
 
-async function extractFaceFromBox(input, box) {
-    const regionsToExtract = [new faceapi.Rect(box.x, box.y - 80, box.width + 20, box.height + 90)];
-    //Creating canvas array
-    faceImages = await faceapi.extractFaces(input, regionsToExtract);
+async function getDetections(video) {
+    const canvas = document.getElementById('canvas');
+    const displaySize = {width: video.width, height: video.height};
+    faceapi.matchDimensions(canvas, displaySize);
+    //every 100ms =>
+    setInterval(async () => {
+        //get detections
+        const detections = await faceapi.detectAllFaces(video, options);
+        //resize canvas
+        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+        //clear canvas
+        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+        resizedDetections.forEach(detections => {
+            const label = "Person " + (resizedDetections.indexOf(detections) + 1) +
+                "  sc: " + detections.score.toFixed(2).toString();
+            const drawBox = new faceapi.draw.DrawBox(detections.box, { label });
+            drawBox.draw(canvas);
+        })
+    }, 100);
 }
+//
+// async function extractFaceFromBox(input, box) {
+//     const regionsToExtract = [new faceapi.Rect(box.x, box.y - 80, box.width + 20, box.height + 90)];
+//     //Creating canvasEl array
+//     faceImages = await faceapi.extractFaces(input, regionsToExtract);
+// }
 

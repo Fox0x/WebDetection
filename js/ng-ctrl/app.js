@@ -19,7 +19,6 @@ app.config(function ($routeProvider) {
                         files: [
                             'js/live',
                             'js/live/image.js',
-                            'js/live/player.js',
                             'js/live/form.js',
                             'js/live/detections.js'
                         ]
