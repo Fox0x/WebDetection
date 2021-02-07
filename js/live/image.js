@@ -2,13 +2,20 @@
 
 let isPhotoPicked = [false, false, false, false]
 
+async function extractFaceFromBox(input, box) {
+    const regionsToExtract = [new faceapi.Rect(box.x, box.y, box.width, box.height)];
+    //Creating canvasEl array
+    let faceImages = await faceapi.extractFaces(input, regionsToExtract);
+    await addToImageList(faceImages)
+}
+
 let i = 1;
-async function addToImageList() {
+
+async function addToImageList(faceImages) {
     await faceImages.forEach(canvas => {
         if (i <= 4) {
             if (canvas.toDataURL() !== null) {
                 document.getElementById('outputImage' + i).src = canvas.toDataURL();
-                document.getElementById('outputImage' + i).alt = detections[0].descriptor;
                 i++;
             }
         } else {
@@ -20,18 +27,18 @@ async function addToImageList() {
 function onClick(imageId) {
     showForm('form' + imageId);
     isPhotoPicked = [false, false, false, false];
-    isPhotoPicked[imageId-1] = true;
+    isPhotoPicked[imageId - 1] = true;
     console.log(isPhotoPicked);
 }
 
-function increaseConfidence () {
+function increaseConfidence() {
     let confidence = parseFloat(document.getElementById('confidenceOutput').value);
     confidence = Math.min(faceapi.utils.round(confidence + 0.1), 1.0);
     document.getElementById('confidenceOutput').value = confidence;
     console.log(confidence);
 }
 
-function decreaseConfidence () {
+function decreaseConfidence() {
     let confidence = parseFloat(document.getElementById('confidenceOutput').value);
     confidence = Math.max(faceapi.utils.round(confidence - 0.1), 0.1);
     document.getElementById('confidenceOutput').value = confidence;

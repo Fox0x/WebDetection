@@ -38,23 +38,22 @@ async function getDetections(video) {
     //every 100ms =>
     setInterval(async () => {
         //get detections
-        const detections = await faceapi.detectAllFaces(video, options);
+        const results = await faceapi.detectAllFaces(video, options);
         //resize canvas
-        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+        const resizedDetections = faceapi.resizeResults(results, displaySize);
         //clear canvas
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        resizedDetections.forEach(detections => {
-            const label = "Person " + (resizedDetections.indexOf(detections) + 1) +
-                "  sc: " + detections.score.toFixed(2).toString();
-            const drawBox = new faceapi.draw.DrawBox(detections.box, { label });
+        resizedDetections.forEach(detection => {
+            const label = "Person " + (resizedDetections.indexOf(detection) + 1) +
+                "  sc: " + detection.score.toFixed(2).toString();
+            console.log(detection.box);
+            const drawBox = new faceapi.draw.DrawBox(detection.box, { label });
             drawBox.draw(canvas);
+            extractFaceFromBox(video, detection.box)
+
         })
     }, 100);
 }
-//
-// async function extractFaceFromBox(input, box) {
-//     const regionsToExtract = [new faceapi.Rect(box.x, box.y - 80, box.width + 20, box.height + 90)];
-//     //Creating canvasEl array
-//     faceImages = await faceapi.extractFaces(input, regionsToExtract);
-// }
+
+
 
