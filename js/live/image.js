@@ -28,5 +28,7 @@ function onClick(imageId) {
     showForm('form' + imageId);
     isPhotoPicked = [false, false, false, false];
     isPhotoPicked[imageId - 1] = true;
+    myForm[imageId - 1].image = document.getElementById('outputImage' + imageId).src;
     console.log(isPhotoPicked);
+    console.log(myForm[imageId - 1].image);
 }
