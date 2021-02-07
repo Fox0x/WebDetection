@@ -46,11 +46,9 @@ async function getDetections(video) {
         resizedDetections.forEach(detection => {
             const label = "Person " + (resizedDetections.indexOf(detection) + 1) +
                 "  sc: " + detection.score.toFixed(2).toString();
-            console.log(detection.box);
-            const drawBox = new faceapi.draw.DrawBox(detection.box, { label });
+            const drawBox = new faceapi.draw.DrawBox(detection.box, {label});
             drawBox.draw(canvas);
             extractFaceFromBox(video, detection.box)
-
         })
     }, 100);
 }

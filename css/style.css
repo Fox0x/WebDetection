@@ -14,9 +14,6 @@
 #video {
     border-bottom: #901612 solid 10px;
     box-shadow: rgb(0, 0, 0) 0 10px 13px -7px, 5px 5px 15px 5px rgba(255, 255, 255, 0);
-    transform: rotateY(180deg);
-    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
-    -moz-transform:rotateY(180deg); /* Firefox */
 }
 
 canvas {
