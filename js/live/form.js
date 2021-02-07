@@ -1,3 +1,5 @@
+'use strict';
+
 function showForm (formId) {
     document.querySelectorAll('form').forEach(element => {
         //Hide all forms

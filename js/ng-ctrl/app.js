@@ -1,3 +1,4 @@
+'use strict';
 let app = angular.module('app', ['ngRoute', 'oc.lazyLoad']);
 
 app.controller('AppCtrl', ($scope) => {
