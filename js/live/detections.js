@@ -20,13 +20,26 @@ async function onVideoLoaded() {
     });
 }
 
-let minConfidence = 0.4;
+let minConfidence = 0.8;
+
+function increaseConfidence() {
+    minConfidence = Math.min(faceapi.utils.round(minConfidence + 0.1), 0.9);
+    document.getElementById('confidenceOutput').value = minConfidence;
+    changeModel();
+}
+
+function decreaseConfidence() {
+    minConfidence = Math.max(faceapi.utils.round(minConfidence - 0.1), 0.1);
+    document.getElementById('confidenceOutput').value = minConfidence;
+    changeModel();
+}
+
 let options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 2});
 
-function changeModel () {
+function changeModel() {
     let model = document.getElementById('model');
     model.value === 'tinyFaceDetector' ?
-        options = new faceapi.TinyFaceDetectorOptions({inputSize: 160, minConfidence}) :
+        options = new faceapi.TinyFaceDetectorOptions({inputSize: 160, scoreThreshold: minConfidence}) :
         options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 2});
     console.log(options._name)
 }
@@ -52,6 +65,3 @@ async function getDetections(video) {
         })
     }, 100);
 }
-
-
-
