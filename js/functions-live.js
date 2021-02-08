@@ -21,6 +21,8 @@ let myForm = [
     secondName: ''
 }
 ];
+let minConfidence = 0.8;
+let options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 2});
 //================================================//
 //Image functions
 let isPhotoPicked = [false, false, false, false];
@@ -86,7 +88,6 @@ function onClick(imageId) {
         });
     }
 
-    let minConfidence = 0.8;
     function increaseConfidence() {
         minConfidence = Math.min(faceapi.utils.round(minConfidence + 0.1), 0.9);
         document.getElementById('confidenceOutput').value = minConfidence;
@@ -99,7 +100,6 @@ function onClick(imageId) {
         changeModel();
     }
 
-    let options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 2});
 
     function changeModel() {
         let model = document.getElementById('model');

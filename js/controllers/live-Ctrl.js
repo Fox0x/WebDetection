@@ -1,3 +1,4 @@
-app.controller('LiveCtrl', ($scope) => {
-$scope.confidence = 0.8;
+app.register.controller('LiveCtrl', function ($scope) {
+    $scope.confidence = 0.8;
 });
+
