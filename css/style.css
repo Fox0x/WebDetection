@@ -47,24 +47,24 @@ option {
     color: #D9FFF5;
 }
 
-#confidence button {
+#confidence-container button {
     background: transparent;
     border: 0;
     color: #D9FFF5;
 }
 
-#confidence input {
+#confidence-container input {
     background: transparent;
     color: #D9FFF5;
     border: 0;
     text-align: center;
 }
 
-#confidence p {
+#confidence-container p {
     color: #D9FFF5;
     margin-right: 20px;
 }
 
-#confidence i {
+#confidence-container i {
     color: #D9FFF5;
 }
