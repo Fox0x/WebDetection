@@ -22,7 +22,7 @@ let myForm = [
 }
 ];
 let minConfidence = 0.8;
-let options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 2});
+let options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 10});
 //================================================//
 //Image functions
 let isPhotoPicked = [false, false, false, false];
@@ -88,27 +88,6 @@ function onClick(imageId) {
         });
     }
 
-    function increaseConfidence() {
-        minConfidence = Math.min(faceapi.utils.round(minConfidence + 0.1), 0.9);
-        document.getElementById('confidenceOutput').value = minConfidence;
-        changeModel();
-    }
-
-    function decreaseConfidence() {
-        minConfidence = Math.max(faceapi.utils.round(minConfidence - 0.1), 0.1);
-        document.getElementById('confidenceOutput').value = minConfidence;
-        changeModel();
-    }
-
-
-    function changeModel() {
-        let model = document.getElementById('model');
-        model.value === 'tinyFaceDetector' ?
-            options = new faceapi.TinyFaceDetectorOptions({inputSize: 160, scoreThreshold: minConfidence}) :
-            options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 2});
-        console.log(options._name)
-    }
-
     async function getDetections(video) {
         const canvas = document.getElementById('canvas');
         const displaySize = {width: video.width, height: video.height};
@@ -131,3 +110,23 @@ function onClick(imageId) {
         }, 100);
     }
 //================================================//
+//Controllers func
+function increaseConfidence() {
+    minConfidence = Math.min(faceapi.utils.round(minConfidence + 0.1), 0.9);
+    document.getElementById('confidenceOutput').value = minConfidence;
+    changeModel();
+}
+
+function decreaseConfidence() {
+    minConfidence = Math.max(faceapi.utils.round(minConfidence - 0.1), 0.1);
+    document.getElementById('confidenceOutput').value = minConfidence;
+    changeModel();
+}
+
+function changeModel() {
+    let model = document.getElementById('model');
+    model.value === 'tinyFaceDetector' ?
+        options = new faceapi.TinyFaceDetectorOptions({inputSize: 160, scoreThreshold: minConfidence}) :
+        options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 10});
+    console.log(options._name)
+}
