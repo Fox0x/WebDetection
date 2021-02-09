@@ -54,10 +54,6 @@ option {
     height: 30px;
 }
 
-#confidence-container {
-
-}
-
 #confidence-container input {
     background: transparent;
     color: #6c757d;

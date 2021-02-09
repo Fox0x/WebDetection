@@ -1,6 +1,5 @@
 'use strict';
 let app = angular.module('WebDetections', ['ui.router', 'oc.lazyLoad']);
-
 app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
     $urlRouterProvider.otherwise('/live');
 
