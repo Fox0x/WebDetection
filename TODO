@@ -1,2 +1,3 @@
 - Сделай confidence с помощью AngularJs
 (контроллер, в нём $scope.confidence, increaseConfidence(), decreaseConfidence() и всё это нужно связать с опциями модели)
+- Добавить спиннер загрузки

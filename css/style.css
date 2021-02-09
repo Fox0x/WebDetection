@@ -39,32 +39,47 @@ canvas {
 select {
     background: transparent;
     border: 0;
-    color: #D9FFF5;
+    color: #6c757d;
 }
 
 option {
     background: #131516;
-    color: #D9FFF5;
+    color: #6c757d;
 }
 
 #confidence-container button {
     background: transparent;
     border: 0;
-    color: #D9FFF5;
+    color: #6c757d;
+    height: 30px;
+}
+
+#confidence-container {
+
 }
 
 #confidence-container input {
     background: transparent;
-    color: #D9FFF5;
+    color: #6c757d;
     border: 0;
     text-align: center;
+    height: 25px;
 }
 
 #confidence-container p {
-    color: #D9FFF5;
+    color: #6c757d;
     margin-right: 20px;
+    margin-top: 0 !important;
+
 }
 
 #confidence-container i {
-    color: #D9FFF5;
+    color: #6c757d;
 }
+
+:focus {
+    outline: none;
+    box-shadow: none;
+    border: none;
+}
+

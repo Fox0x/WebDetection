@@ -16,7 +16,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
             resolve: {
                 loadPlugin: function ($ocLazyLoad) {
                     return $ocLazyLoad.load({
-                        files: ['js/functions-live.js']
+                        files: ['js/functions-live-m.js']
                     });
                 }
             },
