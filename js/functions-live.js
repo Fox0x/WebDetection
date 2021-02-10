@@ -22,7 +22,8 @@ let myForm = [
     }
 ];
 let minConfidence = 0.8;
-let options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 1});
+let options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 10});
+
 //Image functions
 let isPhotoPicked = [false, false, false, false];
 
@@ -58,7 +59,6 @@ function onClick(imageId) {
     isPhotoPicked[imageId - 1] = true;
     myForm[imageId - 1].image = document.getElementById('outputImage' + imageId).src;
     console.log(isPhotoPicked);
-    console.log(myForm[imageId - 1].image);
 }
 
 //Form functions
@@ -73,72 +73,64 @@ function showForm(formId) {
 }
 
 //Detections func
-let labeledDescriptor;
 let video;
+let canvas;
+let displaySize;
 
 Promise.all([
-    console.log('Models start loading'),
-    faceapi.nets.ssdMobilenetv1.loadFromUri('../models'),
-    faceapi.nets.tinyFaceDetector.loadFromUri('../models'),
-    faceapi.nets.faceRecognitionNet.loadFromUri('../models'),
-    console.log("Models are loaded")
+    faceapi.loadSsdMobilenetv1Model('../models'),
+    faceapi.loadFaceLandmarkModel('../models'),
+    faceapi.loadFaceRecognitionModel('../models'),
 ]).then(loadVideo);
 
-
 function loadVideo() {
-    console.log('getting video')
     navigator.getUserMedia(
         {video: {}},
         stream => (document.getElementById('video').srcObject = stream),
         err => console.error(err)
     );
-    console.log('video loaded')
     document.getElementById('video').addEventListener('playing', () => {
         video = document.getElementById('video');
+        canvas = document.getElementById('canvas');
+        displaySize = {width: video.width, height: video.height};
         getDetections().then(r => console.log('getDetections is complete'));
     });
 }
 
 
 async function getDetections() {
-    const canvas = document.getElementById('canvas');
-    const displaySize = {width: video.width, height: video.height};
-    faceapi.matchDimensions(canvas, displaySize);
-
-    setInterval(async () => {
-        //get detections
-        const results = await faceapi.detectAllFaces(video, options);
-
-//resize canvas
-        const resizedDetections = faceapi.resizeResults(results, displaySize);
-
-        for (const detection of resizedDetections) {
-            if (detection.score >= minConfidence) {
-                //faceapi.draw.drawDetections(canvas, detection)
-                if (labeledDescriptor === undefined) {
-                    labeledDescriptor = await faceapi.computeFaceDescriptor(video);
-                    //console.log('labeledDescriptor length is: ' + labeledDescriptor.length);
-                } else {
-                    await name(detection, canvas);
-                }
-            }
-        }
-    }, 100);
-
+    //get detections
+    let firstDetectArray = await faceapi.detectAllFaces(video, options).withFaceLandmarks().withFaceDescriptors();
+    if (firstDetectArray && firstDetectArray.length > 0) {
+        const faceMatcher = new faceapi.FaceMatcher(firstDetectArray);
+        await name(faceMatcher);
+    } else {
+        await getDetections();
+    }
 }
 
-async function name(detection, canvas) {
-    let currentDescriptor = await faceapi.computeFaceDescriptor(video);
-    //console.log('currentDescriptor length is: ' + currentDescriptor.length);
-    const distance = 100 - faceapi.euclideanDistance(currentDescriptor, labeledDescriptor) * 100;
-    //console.log('similar on: ' + (100 - distance * 100).toFixed(1) + '%');
-    let label;
-    distance >= 55 ?
-        label = 'similar on: ' + (distance).toFixed(1) + '%' :
-        label = 'person not similar';
-//clear canvas
+async function name(faceMatcher) {
+    setInterval(async () => {
+        let secondDetectArray = await faceapi.detectAllFaces(video, options).withFaceLandmarks().withFaceDescriptors();
+        if (secondDetectArray && secondDetectArray.length > 0) {
+            secondDetectArray.forEach(fd => {
+                const bestMatch = faceMatcher.findBestMatch(fd.descriptor)
+                if (bestMatch.label === 'unknown') {
+                    //TODO: удали нахер отображение и добавь создание перса
+                    drawBox(fd.detection.box, bestMatch.toString())
+                } else {
+                    drawBox(fd.detection.box, bestMatch.toString())
+                }
+            })
+        }
+    }, 100);
+}
+
+//Draw canvas with any label
+function drawBox(box, label) {
+    faceapi.matchDimensions(canvas, displaySize);
     canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-    const drawBox = new faceapi.draw.DrawBox(detection.box, {label});
+    const drawBox = new faceapi.draw.DrawBox(box, {label});
     drawBox.draw(canvas);
 }
 
