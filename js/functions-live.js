@@ -74,8 +74,6 @@ function showForm(formId) {
 
 //Detections func
 let video;
-let canvas;
-let displaySize;
 
 Promise.all([
     faceapi.loadSsdMobilenetv1Model('../models'),
@@ -91,8 +89,6 @@ function loadVideo() {
     );
     document.getElementById('video').addEventListener('playing', () => {
         video = document.getElementById('video');
-        canvas = document.getElementById('canvas');
-        displaySize = {width: video.width, height: video.height};
         getDetections().then(r => console.log('getDetections is complete'));
     });
 }
@@ -101,7 +97,9 @@ function loadVideo() {
 async function getDetections() {
     //get detections
     let firstDetectArray = await faceapi.detectAllFaces(video, options).withFaceLandmarks().withFaceDescriptors();
+
     if (firstDetectArray && firstDetectArray.length > 0) {
+        console.log('detect ' + firstDetectArray.length + ' faces')
         const faceMatcher = new faceapi.FaceMatcher(firstDetectArray);
         await name(faceMatcher);
     } else {
@@ -110,26 +108,29 @@ async function getDetections() {
 }
 
 async function name(faceMatcher) {
+    let canvas = document.getElementById('canvas');
+    let displaySize = {width: video.width, height: video.height};
+    faceapi.matchDimensions(canvas, displaySize);
+
     setInterval(async () => {
-        let secondDetectArray = await faceapi.detectAllFaces(video, options).withFaceLandmarks().withFaceDescriptors();
+        const secondDetectArray = await faceapi.detectAllFaces(video, options).withFaceLandmarks().withFaceDescriptors();
         if (secondDetectArray && secondDetectArray.length > 0) {
+            canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
             secondDetectArray.forEach(fd => {
-                const bestMatch = faceMatcher.findBestMatch(fd.descriptor)
-                if (bestMatch.label === 'unknown') {
+                const bestMatch = faceMatcher.findBestMatch(fd.descriptor).toString();
+                bestMatch.label === 'unknown' ?
                     //TODO: удали нахер отображение и добавь создание перса
-                    drawBox(fd.detection.box, bestMatch.toString())
-                } else {
-                    drawBox(fd.detection.box, bestMatch.toString())
-                }
-            })
+                    drawBox(canvas,fd.detection.box, bestMatch.toString()) :
+
+                    drawBox(canvas, fd.detection.box, bestMatch.toString())
+            });
         }
     }, 100);
 }
 
 //Draw canvas with any label
-function drawBox(box, label) {
-    faceapi.matchDimensions(canvas, displaySize);
-    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+async function drawBox(canvas, box, label) {
+    //TODO: добавь ресайзрезулт
     const drawBox = new faceapi.draw.DrawBox(box, {label});
     drawBox.draw(canvas);
 }
