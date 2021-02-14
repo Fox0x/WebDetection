@@ -27,17 +27,12 @@ let options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 10})
 //Image functions
 let isPhotoPicked = [false, false, false, false];
 
-async function extractFaceFromBox(input, box) {
-    const regionsToExtract = [new faceapi.Rect(box.x - 50, box.y - 90, box.width + 50, box.height + 50)];
-    //Creating canvasEl array
-    let faceImages = await faceapi.extractFaces(input, regionsToExtract);
-    await addToImageList(faceImages)
-}
-
 let i = 1;
 
-async function addToImageList(faceImages) {
-    await faceImages.forEach(canvas => {
+function addToImageList(input, box) {
+    let facesArray = [faceapi.extractFaces(input, [new faceapi.Rect(box.x - 50, box.y - 90, box.width + 50, box.height + 50)])];
+
+    facesArray.forEach(canvas => {
         if (i <= 4) {
             if (canvas.toDataURL() !== null) {
                 if (!isPhotoPicked[i - 1]) {
@@ -89,38 +84,35 @@ function loadVideo() {
     );
     document.getElementById('video').addEventListener('playing', () => {
         video = document.getElementById('video');
-        getDetections().then(r => console.log('getDetections is complete'));
+        detect().then(r => getDetections(r)).then()
     });
 }
 
-
-async function getDetections() {
-    //get detections
-    let firstDetectArray = await faceapi.detectAllFaces(video, options).withFaceLandmarks().withFaceDescriptors();
-
-    if (firstDetectArray && firstDetectArray.length > 0) {
-        console.log('detect ' + firstDetectArray.length + ' faces')
-        const faceMatcher = new faceapi.FaceMatcher(firstDetectArray);
-        await name(faceMatcher);
-    } else {
-        await getDetections();
-    }
+async function detect() {
+    return faceapi.detectAllFaces(video, options).withFaceLandmarks().withFaceDescriptors();
 }
 
-async function name(faceMatcher) {
+function getDetections(detectionsArray) {
+    console.log('detect ' + detectionsArray.length + ' faces')
+    const faceMatcher = new faceapi.FaceMatcher(detectionsArray);
+
+    matchFace(faceMatcher);
+}
+
+function matchFace(faceMatcher) {
     let canvas = document.getElementById('canvas');
     let displaySize = {width: video.width, height: video.height};
     faceapi.matchDimensions(canvas, displaySize);
 
-    setInterval(async () => {
-        const secondDetectArray = await faceapi.detectAllFaces(video, options).withFaceLandmarks().withFaceDescriptors();
+    setInterval(() => {
+        const secondDetectArray = detect().then();
         if (secondDetectArray && secondDetectArray.length > 0) {
             canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
             secondDetectArray.forEach(fd => {
                 const bestMatch = faceMatcher.findBestMatch(fd.descriptor).toString();
                 bestMatch.label === 'unknown' ?
                     //TODO: удали нахер отображение и добавь создание перса
-                    drawBox(canvas,fd.detection.box, bestMatch.toString()) :
+                    drawBox(canvas, fd.detection.box, bestMatch.toString()) :
 
                     drawBox(canvas, fd.detection.box, bestMatch.toString())
             });
