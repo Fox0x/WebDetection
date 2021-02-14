@@ -1,7 +1,6 @@
-'use strict';
 let app = angular.module('WebDetections', ['ui.router', 'oc.lazyLoad']);
 app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
-    $urlRouterProvider.otherwise('/list');
+    $urlRouterProvider.otherwise('/live');
 
     app.register = {
         controller: $controllerProvider.register
@@ -15,7 +14,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
             resolve: {
                 loadPlugin: function ($ocLazyLoad) {
                     return $ocLazyLoad.load({
-                        files: ['js/functions-live.js']
+                        files: ['js/functions-live-m.js']
                     });
                 }
             }
@@ -32,5 +31,4 @@ app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
             }
         }
     });
-
 });

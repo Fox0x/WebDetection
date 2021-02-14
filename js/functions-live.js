@@ -1,129 +1,103 @@
 //Vars
-let myForm = [
-    {
-        image: '',
-        firstName: '',
-        secondName: ''
-    },
-    {
-        image: '',
-        firstName: '',
-        secondName: ''
-    },
-    {
-        image: '',
-        firstName: '',
-        secondName: ''
-    },
-    {
-        image: '',
-        firstName: '',
-        secondName: ''
-    }
-];
 let minConfidence = 0.8;
 let options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 10});
 
-//Image functions
-let isPhotoPicked = [false, false, false, false];
-
-let i = 1;
-
-function addToImageList(input, box) {
-    let facesArray = [faceapi.extractFaces(input, [new faceapi.Rect(box.x - 50, box.y - 90, box.width + 50, box.height + 50)])];
-
-    facesArray.forEach(canvas => {
-        if (i <= 4) {
-            if (canvas.toDataURL() !== null) {
-                if (!isPhotoPicked[i - 1]) {
-                    document.onload = function () {
-                        document.getElementById('outputImage' + i).src = canvas.toDataURL();
-                    }
-                }
-                i++;
-            }
-        } else {
-            i = 1;
-        }
-    });
-}
-
-function onClick(imageId) {
-    showForm('form' + imageId);
-    isPhotoPicked = [false, false, false, false];
-    isPhotoPicked[imageId - 1] = true;
-    myForm[imageId - 1].image = document.getElementById('outputImage' + imageId).src;
-    console.log(isPhotoPicked);
-}
-
-//Form functions
-function showForm(formId) {
-    document.querySelectorAll('form').forEach(element => {
-        //Hide all forms
-        element.style.visibility = "hidden";
-        //Clear showForm when hide
-        element.reset();
-    });
-    document.getElementById(formId).style.visibility = "visible";
-}
-
 //Detections func
 let video;
+let displaySize;
+let canvas;
+let faceMatcher;
 
 Promise.all([
     faceapi.loadSsdMobilenetv1Model('../models'),
     faceapi.loadFaceLandmarkModel('../models'),
     faceapi.loadFaceRecognitionModel('../models'),
-]).then(loadVideo);
+    faceapi.loadTinyFaceDetectorModel('../models')
+]).then(loadVideo).then(initVars);
 
-function loadVideo() {
-    navigator.getUserMedia(
-        {video: {}},
-        stream => (document.getElementById('video').srcObject = stream),
-        err => console.error(err)
-    );
-    document.getElementById('video').addEventListener('playing', () => {
-        video = document.getElementById('video');
-        detect().then(r => getDetections(r)).then()
-    });
-}
-
-async function detect() {
-    return faceapi.detectAllFaces(video, options).withFaceLandmarks().withFaceDescriptors();
-}
-
-function getDetections(detectionsArray) {
-    console.log('detect ' + detectionsArray.length + ' faces')
-    const faceMatcher = new faceapi.FaceMatcher(detectionsArray);
-
-    matchFace(faceMatcher);
-}
-
-function matchFace(faceMatcher) {
-    let canvas = document.getElementById('canvas');
-    let displaySize = {width: video.width, height: video.height};
+function initVars() {
+    displaySize = {width: video.width, height: video.height};
+    canvas = document.getElementById('canvas');
     faceapi.matchDimensions(canvas, displaySize);
 
-    setInterval(() => {
-        const secondDetectArray = detect().then();
-        if (secondDetectArray && secondDetectArray.length > 0) {
-            canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-            secondDetectArray.forEach(fd => {
-                const bestMatch = faceMatcher.findBestMatch(fd.descriptor).toString();
-                bestMatch.label === 'unknown' ?
-                    //TODO: удали нахер отображение и добавь создание перса
-                    drawBox(canvas, fd.detection.box, bestMatch.toString()) :
+}
 
-                    drawBox(canvas, fd.detection.box, bestMatch.toString())
+function loadVideo() {
+    video = document.querySelector('video');
+    navigator.mediaDevices.getUserMedia({video: true, audio: false})
+        .then(function (stream) {
+            video.srcObject = stream;
+            video.play();
+            video.addEventListener('playing', () => {
+                //Get first detections
+                getDetections()
+                //Change preloader to live.htm
+                document.getElementById('spinner').remove();
+                document.getElementById('content').style.visibility = 'visible';
+                document.getElementById('form1').style.visibility = 'visible';
+            })
+        })
+        .catch(function (err) {
+            console.log("An error occurred: " + err);
+        });
+}
+
+let i = 1;
+//Adding image to image list
+function addToImageList(face) {
+    let box = face.detection.box
+    faceapi.extractFaces(video, [new faceapi.Rect(box.x, box.y, box.width, box.height)])
+        .then(res => {
+            res.forEach(canvas => {
+                if (i <= 4) {
+                    document.getElementById('outputImage' + i).src = canvas.toDataURL();
+                    document.getElementById('form' + i).style.visibility = 'visible';
+                    i++;
+                } else {
+                    i = 1;
+                }
+            })
+        })
+}
+
+function getDetections() {
+    console.log('Trying find faces');
+    faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options({
+        minConfidence: 0.6,
+        maxResults: 4
+    })).withFaceLandmarks().withFaceDescriptors()
+        .then(resolve => {
+            console.log('Detect ' + resolve.length + ' faces');
+            if (resolve.length > 0) {
+                faceMatcher = new faceapi.FaceMatcher(resolve);
+                matchFaces(faceMatcher);
+                resolve.forEach(resolve => addToImageList(resolve));
+            } else {
+                getDetections();
+            }
+        });
+}
+
+function matchFaces(faceMatcher) {
+    setInterval(async () => {
+        faceapi.detectAllFaces(video, options).withFaceLandmarks().withFaceDescriptors().then(resolve => {
+            canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+            resolve.forEach(fd => {
+                const bestMatch = faceMatcher.findBestMatch(fd.descriptor);
+                if (bestMatch.label.toString() === 'unknown') {
+                    faceMatcher = new faceapi.FaceMatcher(resolve);
+                    resolve.forEach(resolve => addToImageList(resolve));
+                } else {
+                    drawBox(canvas, fd, bestMatch.toString());
+                }
             });
-        }
+        });
     }, 100);
 }
 
 //Draw canvas with any label
-async function drawBox(canvas, box, label) {
-    //TODO: добавь ресайзрезулт
-    const drawBox = new faceapi.draw.DrawBox(box, {label});
+async function drawBox(canvas, face, label) {
+    const drawBox = new faceapi.draw.DrawBox(faceapi.resizeResults(face, displaySize).detection.box, {label});
     drawBox.draw(canvas);
 }
 

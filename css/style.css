@@ -1,10 +1,18 @@
 .navbar {
     background-color: #131516;
     box-shadow: rgb(0, 0, 0) 0 10px 13px -7px, 5px 5px 15px 5px rgba(255, 255, 255, 0);
+    padding-left: 250px;
 }
 
-.btn-outline-secondary {
+.navbar a {
+    color: #6c757d !important;
+    text-decoration: none;
+}
+
+.navbar .btn-outline-secondary {
     border-color: #1E2E5F !important;
+    margin: 5px;
+    height: 80%;
 }
 
 .body {
@@ -29,11 +37,6 @@ canvas {
 
 .btn-outline-success {
     width: 80px;
-}
-
-.btn-outline-secondary {
-    margin: 5px;
-    height: 80%;
 }
 
 select {
@@ -73,9 +76,10 @@ option {
     color: #6c757d;
 }
 
-:focus {
-    outline: none;
-    box-shadow: none;
-    border: none;
+#spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    color: #6c757d;
 }
-

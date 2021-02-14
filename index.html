@@ -30,8 +30,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <button type="button" class="btn btn-outline-secondary"><a ui-sref="live">LIVE</a></button>
-                    <button type="button" class="btn btn-outline-secondary"><a ui-sref="list">LIST</a></button>
-
+                    <button type="button" class="btn btn-outline-secondary"><a ui-sref="live">SUBJECTS</a></button>
+                    <button type="button" class="btn btn-outline-secondary"><a ui-sref="live">VISITS</a></button>
                 </ul>
             </div>
         </div>
@@ -39,7 +39,12 @@
 </header>
 <!--=====================================================BODY========================================================-->
 <body class="body" ng-app="WebDetections">
-<div ui-view></div>
+
+<div class="d-flex flex-column justify-content-center" id="spinner">
+    <div class="spinner-border"  role="status"></div>
+    <span style="margin-top: 10px; margin-left: -15px">LOADING...</span>
+</div>
+<div ui-view id="content" style="visibility: hidden"></div>
 
 <!--Bootstrap========================================================================================================-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
