@@ -7,6 +7,7 @@ let video;
 let displaySize;
 let canvas;
 let faceMatcher;
+let labeledDescriptors = [];
 
 Promise.all([
     faceapi.loadSsdMobilenetv1Model('../models'),
@@ -43,6 +44,7 @@ function loadVideo() {
 }
 
 let i = 1;
+
 //Adding image to image list
 function addToImageList(face) {
     let box = face.detection.box
@@ -60,6 +62,18 @@ function addToImageList(face) {
         })
 }
 
+function addNewLabeledDescriptor(descriptor) {
+    labeledDescriptors.push(
+        new faceapi.LabeledFaceDescriptors(
+            'person ' + (labeledDescriptors.length + 1),
+            [descriptor]
+        ));
+
+    console.log('We are had ' + labeledDescriptors.length + ' descriptors');
+    //labeledDescriptors.forEach(ldesc => console.log(ldesc))
+
+}
+
 function getDetections() {
     console.log('Trying find faces');
     faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options({
@@ -69,7 +83,8 @@ function getDetections() {
         .then(resolve => {
             console.log('Detect ' + resolve.length + ' faces');
             if (resolve.length > 0) {
-                faceMatcher = new faceapi.FaceMatcher(resolve);
+                resolve.forEach(fd => addNewLabeledDescriptor(fd.descriptor));
+                faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
                 matchFaces(faceMatcher);
                 resolve.forEach(resolve => addToImageList(resolve));
             } else {
@@ -85,8 +100,9 @@ function matchFaces(faceMatcher) {
             resolve.forEach(fd => {
                 const bestMatch = faceMatcher.findBestMatch(fd.descriptor);
                 if (bestMatch.label.toString() === 'unknown') {
-                    faceMatcher = new faceapi.FaceMatcher(resolve);
-                    resolve.forEach(resolve => addToImageList(resolve));
+                    addToImageList(fd);
+                    addNewLabeledDescriptor(fd.descriptor);
+                    faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
                 } else {
                     drawBox(canvas, fd, bestMatch.toString());
                 }
