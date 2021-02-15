@@ -30,6 +30,7 @@ function loadVideo() {
             video.srcObject = stream;
             video.play();
             video.addEventListener('playing', () => {
+                canvas.style.left = video.getBoundingClientRect().x + 'px';
                 //Get first detections
                 getDetections()
                 //Change preloader to live.htm
@@ -98,7 +99,10 @@ function addNewLabeledDescriptor(descriptor) {
 
 function getDetections() {
     console.log('Trying find faces');
-    faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options({minConfidence: 0.9, maxResults: 4})).withFaceLandmarks().withFaceDescriptors()
+    faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options({
+        minConfidence: 0.9,
+        maxResults: 4
+    })).withFaceLandmarks().withFaceDescriptors()
         .then(resolve => {
             console.log('Detect ' + resolve.length + ' faces');
             //If got first detection

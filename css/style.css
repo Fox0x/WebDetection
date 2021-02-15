@@ -23,9 +23,7 @@
 }
 
 canvas {
-    position: absolute;
-    left: 164px;
-    bottom: 83px;
+    position: absolute !important;
 }
 
 #image-list input {
