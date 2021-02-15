@@ -47,6 +47,7 @@ let i = 1;
 
 //Adding image to image list
 function addToImageList(face) {
+    console.log('add face to image list')
     let box = face.detection.box
     faceapi.extractFaces(video, [new faceapi.Rect(box.x, box.y, box.width, box.height)])
         .then(res => {
@@ -62,31 +63,78 @@ function addToImageList(face) {
         })
 }
 
+function getLabeledDescriptorsFromLocalStorage() {
+    console.log('Try to find labeledDescriptor')
+    if (labeledDescriptors.length === 0) {
+        console.log('No labeled descriptors found, get from localStorage')
+        // iterate localStorage
+        for (let i = 0; i < localStorage.length; i++) {
+            // set iteration key name
+            const key = localStorage.key(i);
+            // use key name to retrieve the corresponding value
+            const value = Float32Array.from(localStorage.getItem(key).split(","), parseFloat);
+            labeledDescriptors = []
+            labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(key, [value]));
+        }
+        return labeledDescriptors;
+    } else {
+        console.log('Find labeled descriptors for these faces')
+        return labeledDescriptors;
+    }
+}
+
 function addNewLabeledDescriptor(descriptor) {
+    console.log('Adding new labeled descriptor')
+    //Adding new labeled descriptor
     labeledDescriptors.push(
         new faceapi.LabeledFaceDescriptors(
             'person ' + (labeledDescriptors.length + 1),
             [descriptor]
         ));
-
-    console.log('We are had ' + labeledDescriptors.length + ' descriptors');
-    //labeledDescriptors.forEach(ldesc => console.log(ldesc))
-
+    console.log('and save to localStorage')
+    //and save to localStorage
+    labeledDescriptors.forEach(ld => localStorage.setItem(ld.label, ld.descriptors));
 }
 
 function getDetections() {
     console.log('Trying find faces');
-    faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options({
-        minConfidence: 0.6,
-        maxResults: 4
-    })).withFaceLandmarks().withFaceDescriptors()
+    faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options({minConfidence: 0.9, maxResults: 4})).withFaceLandmarks().withFaceDescriptors()
         .then(resolve => {
             console.log('Detect ' + resolve.length + ' faces');
-            if (resolve.length > 0) {
-                resolve.forEach(fd => addNewLabeledDescriptor(fd.descriptor));
-                faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
-                matchFaces(faceMatcher);
-                resolve.forEach(resolve => addToImageList(resolve));
+            //If got first detection
+            if (resolve.length) {
+
+                //and if localStorage is not empty
+                if (localStorage.length) {
+
+                    //get labeledDescriptor from localStorage, then put it into faceMather
+                    faceMatcher = new faceapi.FaceMatcher(getLabeledDescriptorsFromLocalStorage());
+
+                    //then call matchFace()
+                    matchFaces(faceMatcher);
+
+                    //and add each face to imageList
+                    resolve.forEach(fd => addToImageList(fd))
+
+                } else {
+                    //If localStorage is empty
+                    resolve.forEach(fd => {
+
+                        //add each detected face to localStorage
+                        addNewLabeledDescriptor(fd.descriptor);
+
+                        //and to imageList
+                        addToImageList(fd)
+
+                        //then put it into faceMather
+                        faceMatcher = new faceapi.FaceMatcher(getLabeledDescriptorsFromLocalStorage());
+
+                        //and call matchFace().
+                        matchFaces(faceMatcher);
+                    });
+                }
+
+                //If faces are not detected, try again in loop.
             } else {
                 getDetections();
             }
@@ -94,15 +142,25 @@ function getDetections() {
 }
 
 function matchFaces(faceMatcher) {
+    //Every 100ms
     setInterval(async () => {
+        //detecting all faces
         faceapi.detectAllFaces(video, options).withFaceLandmarks().withFaceDescriptors().then(resolve => {
+            //then clear canvas
             canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+
+            //then for each detection ir result array
             resolve.forEach(fd => {
+                //find best match with first detection
                 const bestMatch = faceMatcher.findBestMatch(fd.descriptor);
+                //If person is unknown
                 if (bestMatch.label.toString() === 'unknown') {
+                    console.log('Unknown person detected')
+                    //add to IL
                     addToImageList(fd);
+                    //and create new labeledDescriptor
                     addNewLabeledDescriptor(fd.descriptor);
-                    faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
+                    faceMatcher = new faceapi.FaceMatcher(getLabeledDescriptorsFromLocalStorage());
                 } else {
                     drawBox(canvas, fd, bestMatch.toString());
                 }
