@@ -1,4 +1,5 @@
 //Vars
+let isDetectionScoreShow = false;
 let minConfidence = 0.4;
 let options = new faceapi.SsdMobilenetv1Options({
   minConfidence,
@@ -33,7 +34,6 @@ function loadVideo() {
         //Change preloader to live.htm
         document.getElementById("spinner").remove();
         document.getElementById("content").style.visibility = "visible";
-        document.getElementById("form1").style.visibility = "visible";
         //Get first detections
         localStorage.length ? matchFaces() : getDetections();
       });
@@ -105,8 +105,6 @@ function setLabeledDescriptor(detection) {
   labeledDescriptors.forEach((ld) =>
     localStorage.setItem(ld.label, ld.descriptors)
   );
-  console.log(`Labeled descriptors length ${labeledDescriptors.length}`);
-  console.log(`localStorage length ${localStorage.length}`);
 }
 
 async function getDetections() {
@@ -121,10 +119,11 @@ async function getDetections() {
       if (resolve.length) {
         console.log("Detect " + resolve.length + " faces");
         resolve.forEach((fd) => {
+          //add face photo to imageList
+          addToImageList(fd);
           //add each detected face to localStorage
           setLabeledDescriptor(fd);
-          //and to imageList
-          addToImageList(fd);
+
           //then put it into faceMather
           //faceMatcher = new faceapi.FaceMatcher(getLabeledDescriptors());
           getLabeledDescriptors().then(
@@ -152,6 +151,7 @@ async function matchFaces() {
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         //then for each detection ir result array
         resolve.forEach((fd) => {
+          showDetectionScore(fd);
           //find best match with first detection
           let bestMatch = faceMatcher.findBestMatch(fd.descriptor, 0.5);
           //If person is unknown
@@ -168,13 +168,19 @@ async function matchFaces() {
               canvas,
               fd,
               bestMatch.label +
-                " - " +
+                "  " +
                 ((100 - bestMatch.distance * 100).toFixed(1) + "%")
             );
           }
         });
       });
   }, 100);
+}
+
+function showDetectionScore(fd) {
+  if (isDetectionScoreShow) {
+    console.log(fd.detection.score);
+  }
 }
 
 //Draw canvas with any label
