@@ -17,12 +17,14 @@ Promise.all([
 ]).then(loadVideo).then(initVars);
 
 function initVars() {
+    console.log('initVars');
     displaySize = {width: video.width, height: video.height};
     canvas = document.getElementById('canvas');
     faceapi.matchDimensions(canvas, displaySize);
 }
 
 function loadVideo() {
+    console.log('loadVideo');
     video = document.querySelector('video');
     navigator.mediaDevices.getUserMedia({video: true, audio: false})
         .then(function (stream) {
@@ -30,12 +32,12 @@ function loadVideo() {
             video.play();
             video.addEventListener('playing', () => {
                 canvas.style.left = video.getBoundingClientRect().x + 'px';
-                //Get first detections
-                localStorage.length ? matchFaces() : getDetections();
                 //Change preloader to live.htm
                 document.getElementById('spinner').remove();
                 document.getElementById('content').style.visibility = 'visible';
                 document.getElementById('form1').style.visibility = 'visible';
+                //Get first detections
+                localStorage.length ? matchFaces() : getDetections();
             })
         })
         .catch(function (err) {
@@ -47,7 +49,7 @@ let i = 1;
 
 //Adding image to image list
 function addToImageList(face) {
-    console.log('add face to image list')
+    console.log('addToImageList')
     let box = face.detection.box
     faceapi.extractFaces(video, [new faceapi.Rect(box.x, box.y, box.width, box.height)])
         .then(res => {
@@ -64,10 +66,9 @@ function addToImageList(face) {
 }
 
 async function getLabeledDescriptors() {
+    console.log('getLabeledDescriptors')
     if (!labeledDescriptors.length) {
-        console.log('LabeledDescriptors is empty, try to get from localStorage');
         if (!localStorage.length) {
-            console.log('LocalStorage is empty, try to get first detection');
             await getDetections();
         }
         // iterate localStorage
@@ -79,9 +80,8 @@ async function getLabeledDescriptors() {
             labeledDescriptors = []
             await labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(key, [value]));
         }
-        console.log('LabeledDescriptors length is ' + labeledDescriptors.length);
-        return labeledDescriptors;
     }
+    return labeledDescriptors;
 
     // console.log('Try to find labeledDescriptor')
     // if (!labeledDescriptors.length) {
@@ -103,61 +103,64 @@ async function getLabeledDescriptors() {
     // }
 }
 
-function addNewLabeledDescriptor(descriptor) {
-    console.log('Adding new labeled descriptor')
+function setLabeledDescriptor(descriptor) {
+    console.log('setLabeledDescriptor')
     //Adding new labeled descriptor
     labeledDescriptors.push(
         new faceapi.LabeledFaceDescriptors(
             'person ' + (labeledDescriptors.length + 1),
             [descriptor]
         ));
-    console.log('and save to localStorage')
     //and save to localStorage
     labeledDescriptors.forEach(ld => localStorage.setItem(ld.label, ld.descriptors));
+    console.log('Labeled descriptors length ' + labeledDescriptors.length);
+    console.log('localStorage length ' + localStorage.length);
 }
 
 async function getDetections() {
-    await faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options({minConfidence: 0.9, maxResults: 4}))
+    console.log('getDetections')
+    await faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options({minConfidence: 0.9}))
         .withFaceLandmarks().withFaceDescriptors()
         .then(resolve => {
             if (resolve.length) {
                 console.log('Detect ' + resolve.length + ' faces');
-                //If localStorage is empty
                 resolve.forEach(fd => {
                     //add each detected face to localStorage
-                    addNewLabeledDescriptor(fd.descriptor);
+                    setLabeledDescriptor(fd.descriptor);
                     //and to imageList
-                    addToImageList(fd)
+                    addToImageList(fd);
                     //then put it into faceMather
-                    faceMatcher = new faceapi.FaceMatcher(getLabeledDescriptors());
+                    //faceMatcher = new faceapi.FaceMatcher(getLabeledDescriptors());
+                    getLabeledDescriptors().then(faceMatcher = new faceapi.FaceMatcher(resolve));
+                    matchFaces();
                 });
             } else getDetections();
         });
 }
 
 async function matchFaces() {
-    faceMatcher = new faceapi.FaceMatcher(await getLabeledDescriptors());
+    console.log('matchFaces');
+    await getLabeledDescriptors().then(resolve => faceMatcher = new faceapi.FaceMatcher(resolve));
     //Every 100ms
     setInterval(async () => {
         //detecting all faces
         await faceapi.detectAllFaces(video, options).withFaceLandmarks().withFaceDescriptors().then(resolve => {
             //then clear canvas
             canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-
             //then for each detection ir result array
             resolve.forEach(fd => {
                 //find best match with first detection
-                const bestMatch = faceMatcher.findBestMatch(fd.descriptor);
+                let bestMatch = faceMatcher.findBestMatch(fd.descriptor, 0,5);
                 //If person is unknown
-                if (bestMatch.label.toString() === 'unknown') {
-                    console.log('Unknown person detected')
+                if (bestMatch.label === 'unknown') {
+                    console.log(fd.detection.box)
                     //add to IL
                     addToImageList(fd);
                     //and create new labeledDescriptor
-                    addNewLabeledDescriptor(fd.descriptor);
-                    faceMatcher = new faceapi.FaceMatcher(getLabeledDescriptors());
+                    setLabeledDescriptor(fd.descriptor);
+                    getLabeledDescriptors().then(resolve => faceMatcher = new faceapi.FaceMatcher(resolve));
                 } else {
-                    drawBox(canvas, fd, bestMatch.toString());
+                    drawBox(canvas, fd, bestMatch.label + ' - ' + ((100 - bestMatch.distance * 100).toFixed(1) + '%'));
                 }
             });
         });
@@ -188,5 +191,5 @@ function changeModel() {
     model.value === 'tinyFaceDetector' ?
         options = new faceapi.TinyFaceDetectorOptions({inputSize: 160, scoreThreshold: minConfidence}) :
         options = new faceapi.SsdMobilenetv1Options({minConfidence, maxResults: 10});
-    console.log(options._name)
+    console.log('Model ' + options._name + ' with confidence ' + options._minConfidence);
 }
