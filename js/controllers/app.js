@@ -1,3 +1,6 @@
+let labeledDescriptors = [];
+let users = [];
+
 let app = angular.module('WebDetections', ['ui.router', 'oc.lazyLoad']);
 app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
     $urlRouterProvider.otherwise('/live');
@@ -10,23 +13,22 @@ app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
         .state('live', {
             url: '/live',
             templateUrl: 'views/live.htm',
-            // controller: 'LiveCtrl',
             resolve: {
                 loadPlugin: function ($ocLazyLoad) {
                     return $ocLazyLoad.load({
-                        files: ['js/functions-live.js']
+                        files: ['js/f-live.js']
                     });
                 }
             }
         })
         .state('list', {
         url: '/list',
-        templateUrl: 'views/list.htm',
-        controller: 'ListCtrl',
+        templateUrl: 'views/visitList.htm',
+        controller: 'VListCtrl',
         resolve: {
             loadPlugin: function ($ocLazyLoad) {
                 return $ocLazyLoad.load({
-                    files: ['js/controllers/ListCtrl.js', 'css/list.css']
+                    files: ['css/visitList.css', 'js/controllers/VListCtrl.js']
                 });
             }
         }

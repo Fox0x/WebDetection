@@ -1,11 +1,9 @@
-<div class="container">
+<div class="container" id="live">
 
     <div class="row">
         <!--PLAYER-->
         <div class="col mt-4 ms-5 ps-2">
-            <video preload="auto" autoplay id="video" muted playsinline width="720" height="550">
-
-            </video>
+            <video preload="auto" autoplay id="video" muted playsinline width="720" height="550"></video>
             <canvas id="canvas"></canvas>
 
         </div>
@@ -27,28 +25,28 @@
         <div class="col mt-4">
             <!--Form 1-->
             <form id="form1" style="visibility: hidden"
-                  class="form d-inline-flex flex-column justify-content-center p-2 mb-2">
+                class="form d-inline-flex flex-column justify-content-center p-2 mb-2">
                 <input ng-init="" class="m-1" type="text" placeholder="First name">
                 <input ng-init="" class="m-1" type="text" placeholder="Second name">
                 <button onclick="" type="button" class="btn btn-outline-success mx-auto">Send</button>
             </form>
             <!--Form 2-->
             <form id="form2" style="visibility: hidden"
-                  class="form d-inline-flex flex-column justify-content-center p-2 mb-2">
+                class="form d-inline-flex flex-column justify-content-center p-2 mb-2">
                 <input class="m-1" type="text" placeholder="First name">
                 <input class="m-1" type="text" placeholder="Second name">
                 <button type="button" class="btn btn-outline-success mx-auto">Send</button>
             </form>
             <!--Form 3-->
             <form id="form3" style="visibility: hidden"
-                  class="form d-inline-flex flex-column justify-content-center p-2 mb-2">
+                class="form d-inline-flex flex-column justify-content-center p-2 mb-2">
                 <input class="m-1" type="text" placeholder="First name">
                 <input class="m-1" type="text" placeholder="Second name">
                 <button type="button" class="btn btn-outline-success mx-auto">Send</button>
             </form>
             <!--Form 4-->
             <form id="form4" style="visibility: hidden"
-                  class="form d-inline-flex flex-column justify-content-center p-2 mb-2">
+                class="form d-inline-flex flex-column justify-content-center p-2 mb-2">
                 <input class="m-1" type="text" placeholder="First name">
                 <input class="m-1" type="text" placeholder="Second name">
                 <button type="button" class="btn btn-outline-success mx-auto">Send</button>
@@ -59,16 +57,24 @@
         <div class="col-3 d-inline-flex p-2 ms-5">
             <!-- face_detector_selection_control -->
             <select onchange="changeModel()" class="custom-select" id="model">
-                <option selected value="ssdMobileNetV1">ssdMobileNetV1</option>
-                <option value="tinyFaceDetector">tinyFaceDetector</option>
+                <option value="ssdMobileNetV1">ssdMobileNetV1</option>
+                <option selected value="tinyFaceDetector">tinyFaceDetector</option>
             </select>
         </div>
         <div class="col-3 d-inline-flex p-2 my-auto" id="confidence-container">
             <!-- minConf selection control-->
             <p class="mt-2">Min confidence</p>
+<<<<<<< HEAD
             <button onclick="decreaseConfidence()" type="button" class=""><span class="material-icons">remove_circle_outline</span></button>
             <input id="confidenceOutput" type="text" disabled value="0.8" style="width: 60px">
             <button onclick="increaseConfidence()" type="button" class=""><span class="material-icons">add_circle_outline</span></button>
+=======
+            <button onclick="decreaseConfidence()" type="button" class=""><span
+                    class="material-icons">remove_circle_outline</span></button>
+            <input id="confidenceOutput" type="text" disabled value="0.6" style="width: 60px">
+            <button onclick="increaseConfidence()" type="button" class=""><span
+                    class="material-icons">add_circle_outline</span></button>
+>>>>>>> dev
         </div>
     </div>
 </div>
