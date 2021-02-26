@@ -15,7 +15,6 @@ let options = new faceapi.TinyFaceDetectorOptions({
 })
 window.onload = () => {
     loadVideo();
-
 }
 let displaySize;
 
@@ -79,7 +78,7 @@ async function getLabeledDescriptors() {
     await updateLabeledDescriptors();
     return labeledDescriptors;
 };
-
+let i = 1;
 async function addNewUser(fd) {
     await extractFace(fd).then((imageURL) => {
         localStorage.setItem(
@@ -90,6 +89,13 @@ async function addNewUser(fd) {
                 score: fd.detection.score,
                 created: new Date().toLocaleString(),
             }));
+            if (i <= 4) {
+                document.getElementById("outputImage" + i).src = imageURL;
+                document.getElementById("form" + i).style.visibility = "visible";
+                i++;
+              } else {
+                i = 1;
+              }
     });
     await updateLabeledDescriptors();
 
@@ -135,7 +141,7 @@ async function extractFace(face) {
     let canvas;
     let box = face.detection.box;
     await faceapi.extractFaces(video, [
-        new faceapi.Rect(box.x, box.y, box.width, box.height),
+        new faceapi.Rect(box.x - 70, box.y - 90, box.width + 70, box.height + 90),
     ]).then((resolve) => {
         resolve.forEach((resolve) => {
             canvas = resolve;
