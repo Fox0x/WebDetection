@@ -35,14 +35,13 @@ app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
 let labeledDescriptors = [];
 async function updateLabeledDescriptors() {
   labeledDescriptors = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const descriptor = Float32Array.from(
-      Object.values(
-        JSON.parse(localStorage.getItem("person " + (i + 1))).descriptor
-      )
-    );
+  for(let key in localStorage) {
+    if (!localStorage.hasOwnProperty(key)) {
+      continue; // пропустит такие ключи, как "setItem", "getItem" и так далее
+    }
+    const descriptor = Float32Array.from(Object.values(JSON.parse(localStorage.getItem(key)).descriptor));
     labeledDescriptors.push(
-      new faceapi.LabeledFaceDescriptors("person " + (i + 1), [descriptor])
+      new faceapi.LabeledFaceDescriptors(key, [descriptor])
     );
   }
 }

@@ -93,12 +93,11 @@ let i = 1;
 async function addNewUser(fd) {
   await extractFace(fd).then((imageURL) => {
     localStorage.setItem(
-      "person " + (localStorage.length + 1),
+      new Date().toLocaleString(),
       JSON.stringify({
         image: imageURL,
         descriptor: fd.descriptor,
         score: fd.detection.score,
-        created: new Date().toLocaleString(),
         firstName: "",
         lastName: "",
       })
