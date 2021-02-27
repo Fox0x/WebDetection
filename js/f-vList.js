@@ -4,26 +4,25 @@ app.register.controller("VListCtrl", function ($scope) {
     document.getElementById("spinner").style.visibility = "hidden";
   }
   document.getElementById("content").style.visibility = "visible";
-  	  // Пауза
-  video.pause();
-  // Стоп
-  videoStream.getVideoTracks()[0].stop();
+  // video.pause();
+  // videoStream.getVideoTracks()[0].stop();
 });
-
-
-
 function fillVisitList() {
   console.log("fill visit list");
-  for (let i = 0; i < localStorage.length; i++) {
-    const person = JSON.parse(localStorage.getItem("person " + (i + 1)));
-    createNewVisit(
-      person.image,
-      person.score,
-      person.firstName,
-      person.lastName,
-      person.created,
-      "person " + (i + 1),
-    );
+  for(let key in localStorage) {
+    if (!localStorage.hasOwnProperty(key)) {
+      continue; // пропустит такие ключи, как "setItem", "getItem" и так далее
+    }
+    const person = JSON.parse(localStorage.getItem(key));
+    
+      createNewVisit(
+        person.image,
+        person.score,
+        person.firstName,
+        person.lastName,
+        person.created,
+        key,
+      );
   }
 
   function createNewVisit(image, score, firstName, lastName, created, label) {
@@ -40,11 +39,19 @@ function fillVisitList() {
     fName.placeholder = firstName || label;
     const lName = document.createElement("input");
     lName.placeholder = lastName || created;
-
+    const deleteVisitButton = document.createElement("button");
+    deleteVisitButton.className = "btn btn-danger ";
+    deleteVisitButton.innerHTML = "&#10006";
     visitListcontainer.appendChild(row);
     row.appendChild(col);
     col.appendChild(imgEl);
     col.appendChild(fName);
     col.appendChild(lName);
+    col.appendChild(deleteVisitButton);
+    deleteVisitButton.onclick = function (event) {
+      localStorage.removeItem(label);
+      location.reload();
+      fillVisitList();
+    }
   }
 }
