@@ -1,8 +1,56 @@
-#image-list-container img {
-    width: 100px;
-    height: 130px;
+#content img {
+  width: 200px;
+  height: 230px;
+  padding-left: 0px;
+  padding-right: 0px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
-.row {
-    margin-top: 10px !important;
+.col-2 {
+  margin-top: 10px !important;
+  width: 200px !important;
+  box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.64);
 }
+
+.col-2 input {
+  background-color: transparent;
+  border: 0px;
+  color: #6c757d;
+  text-align: center;
+}
+
+.col-2 input:focus {
+  outline: 0;
+}
+
+.col-2 button {
+  width: 100%;
+  margin-bottom: 3px !important;
+}
+
+/* hide plaseholder when focus ========================================================*/
+:focus::-webkit-input-placeholder {
+  color: transparent;
+}
+
+:focus::-moz-placeholder {
+  color: transparent;
+}
+
+:focus:-moz-placeholder {
+  color: transparent;
+}
+
+:focus:-ms-input-placeholder {
+  color: transparent;
+}
+input::-webkit-input-placeholder       {opacity: 1; transition: opacity 0.3s ease;}
+input::-moz-placeholder                {opacity: 1; transition: opacity 0.3s ease;}
+input:-moz-placeholder                 {opacity: 1; transition: opacity 0.3s ease;}
+input:-ms-input-placeholder            {opacity: 1; transition: opacity 0.3s ease;}
+input:focus::-webkit-input-placeholder {opacity: 0; transition: opacity 0.3s ease;}
+input:focus::-moz-placeholder          {opacity: 0; transition: opacity 0.3s ease;}
+input:focus:-moz-placeholder           {opacity: 0; transition: opacity 0.3s ease;}
+input:focus:-ms-input-placeholder      {opacity: 0; transition: opacity 0.3s ease;}
+/* =============================================================================== */
