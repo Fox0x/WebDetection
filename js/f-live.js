@@ -78,19 +78,6 @@ async function getDetection() {
   return detections;
 }
 
-async function updateLabeledDescriptors() {
-  for (let i = 0; i < localStorage.length; i++) {
-    const descriptor = Float32Array.from(
-      Object.values(
-        JSON.parse(localStorage.getItem("person " + (i + 1))).descriptor
-      )
-    );
-    labeledDescriptors.push(
-      new faceapi.LabeledFaceDescriptors("person " + (i + 1), [descriptor])
-    );
-  }
-}
-
 async function getLabeledDescriptors() {
   if (!localStorage.length) {
     console.log("localStorage is empty");
