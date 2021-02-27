@@ -4,8 +4,10 @@ app.register.controller("VListCtrl", function ($scope) {
     document.getElementById("spinner").style.visibility = "hidden";
   }
   document.getElementById("content").style.visibility = "visible";
-  // video.pause();
-  // videoStream.getVideoTracks()[0].stop();
+  if (videoStream) {
+    video.pause();
+    videoStream.getVideoTracks()[0].stop();
+  }
 });
 function fillVisitList() {
   console.log("fill visit list");
@@ -28,8 +30,6 @@ function fillVisitList() {
     const visitListcontainer = document.getElementById("visitList");
     const col = document.createElement("div");
     col.className = "col-2 m-3 p-0";
-
-    
 
     const imgEl = document.createElement("img");
     imgEl.id = label;
@@ -57,6 +57,6 @@ function fillVisitList() {
       location.reload();
       fillVisitList();
     };
-    col.appendChild
+    col.appendChild;
   }
 }
