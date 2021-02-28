@@ -1,11 +1,11 @@
 app.register.controller("LiveCtrl", function () {
   Promise.all([
-    faceapi.loadSsdMobilenetv1Model("../models"),
+    faceapi.loadTinyFaceDetectorModel("../models"),
     faceapi.loadFaceLandmarkModel("../models"),
     faceapi.loadFaceRecognitionModel("../models"),
-    faceapi.loadTinyFaceDetectorModel("../models"),
-    loadVideo(),
-  ]);
+    faceapi.loadSsdMobilenetv1Model("../models"),
+    
+  ]).then(loadVideo());
 
   //TODO: ------------------------------
 
