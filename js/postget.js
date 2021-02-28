@@ -1,14 +1,15 @@
-const SERVER_URL = "https://afppgmc.face-six.com:3010/fa6_api";
-const SECRET = "cdf709b4cd8ecb0a7f0210118d6a73dc";
+const SERVER_URL = "http://afppgmc.face-six.com:3010/fa6_api/";
+const TOKEN = "b0d037d2bfb311b51791bae981c41f6a";
 
 async function getNewTaskID() {
-  fetch(SERVER_URL + "/processing", {
+  fetch(SERVER_URL + "processing", {
     method: "POST",
-    mode: "cors",
     headers: {
-      "Content-type": "multipart/form-data",
-      Authorization: SECRET,
-    },
-    body: undefined
-  }).then(response => console.log(response));
+		"Authorization": "b0d037d2bfb311b51791bae981c41f6a",
+		"Content-Type": "multipart/form-data"
+	},
+    redirect: "follow",
+  }).then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));;
 }

@@ -1,3 +1,4 @@
+let labeledDescriptors = [];
 let app = angular.module("WebDetections", ["ui.router", "oc.lazyLoad"]);
 app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
   $urlRouterProvider.otherwise("/live");
@@ -32,7 +33,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
       },
     });
 });
-let labeledDescriptors = [];
+
 async function updateLabeledDescriptors() {
   labeledDescriptors = [];
   for(let key in localStorage) {
