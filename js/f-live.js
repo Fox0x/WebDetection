@@ -92,8 +92,9 @@ async function getLabeledDescriptors() {
 let i = 1;
 async function addNewUser(fd) {
   await extractFace(fd).then((imageURL) => {
+    const timeStamp = new Date().toLocaleString(); 
     localStorage.setItem(
-      new Date().toLocaleString(),
+      timeStamp,
       JSON.stringify({
         image: imageURL,
         descriptor: fd.descriptor,
@@ -104,6 +105,11 @@ async function addNewUser(fd) {
     );
     if (i <= 4) {
       document.getElementById("outputImage" + i).src = imageURL;
+      document.getElementById("outputImage" + i).alt = JSON.stringify({
+        timestamp: timeStamp,
+        descriptor: fd.descriptor,
+        score: fd.detection.score,
+      });
       document.getElementById("form" + i).style.visibility = "visible";
       i++;
     } else {
@@ -193,5 +199,21 @@ function changeModel() {
       }));
   console.log(
     "Model " + options._name + " with confidence " + options._minConfidence
+  );
+}
+
+function onClickSend(param) {
+  const image = JSON.parse(document.getElementById("outputImage" + param).alt);
+  const fName = document.getElementById('firstName' + param).value;
+  const lName = document.getElementById('lastName' + param).value;
+  localStorage.setItem(
+    image.timestamp,
+    JSON.stringify({
+      image: document.getElementById("outputImage" + param).src,
+      descriptor: image.descriptor,
+      score: image.score,
+      firstName: fName,
+      lastName: lName,
+    })
   );
 }
