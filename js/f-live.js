@@ -204,16 +204,14 @@ function changeModel() {
 
 function onClickSend(param) {
   const image = JSON.parse(document.getElementById("outputImage" + param).alt);
-  const fName = document.getElementById('firstName' + param).value;
-  const lName = document.getElementById('lastName' + param).value;
   localStorage.setItem(
     image.timestamp,
     JSON.stringify({
       image: document.getElementById("outputImage" + param).src,
       descriptor: image.descriptor,
       score: image.score,
-      firstName: fName,
-      lastName: lName,
+      firstName: document.getElementById('firstName' + param).value,
+      lastName: document.getElementById('lastName' + param).value,
     })
   );
 }
