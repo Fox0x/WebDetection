@@ -46,6 +46,10 @@ function loadVideo() {
       });
     })
     .catch(function (err) {
+      new bootstrap.Modal(document.getElementById('cameraAlertModal'), {
+        keyboard: false,
+        focus: true
+      }).show();
       console.log("An error occurred: " + err);
     });
 }
