@@ -55,9 +55,9 @@
     </div>
   </div>
   <!-- ======================================================= -->
-  <div class="row">
+  <div class="container" style="text-align: center;">
     <!--PLAYER-->
-    <div class="col mt-4 ms-5 ps-2">
+    <div class="col mt-4">
       <video
         preload="auto"
         autoplay
@@ -68,175 +68,24 @@
         height="550"
       ></video>
       <canvas id="canvas"></canvas>
-    </div>
-    <!--IMAGE LIST-->
-    <div class="col-1 mt-4 mx-2 px-0" id="image-list">
-      <!--Output image 1-->
-      <input
-        class="img-list-input"
-        onclick=""
-        alt=""
-        id="outputImage1"
-        src="img/user.png"
-        type="image"
-      />
-
-      <!--Output image 2-->
-      <input
-        class="img-list-input"
-        onclick=""
-        alt=""
-        id="outputImage2"
-        src="img/user.png"
-        type="image"
-      />
-
-      <!--Output image 3-->
-      <input
-        class="img-list-input"
-        onclick=""
-        alt=""
-        id="outputImage3"
-        src="img/user.png"
-        type="image"
-      />
-
-      <!--Output image 4-->
-      <input
-        class="img-list-input"
-        onclick=""
-        alt=""
-        id="outputImage4"
-        src="img/user.png"
-        type="image"
-      />
-    </div>
-    <!--FORMS-->
-    <div class="col mt-4">
-      <!--Form 1-->
-      <form
-        id="form1"
-        style="visibility: hidden"
-        class="form d-inline-flex flex-column justify-content-center p-2 mb-2"
-      >
-        <input
-          id="firstName1"
-          ng-init=""
-          class="m-1"
-          type="text"
-          placeholder="First name"
-        />
-        <input
-          id="lastName1"
-          ng-init=""
-          class="m-1"
-          type="text"
-          placeholder="Second name"
-        />
-        <button
-          onclick="onClickSend(1)"
-          type="button"
-          class="btn btn-outline-success mx-auto"
-        >
-          Send
-        </button>
-      </form>
-      <!--Form 2-->
-      <form
-        id="form2"
-        style="visibility: hidden"
-        class="form d-inline-flex flex-column justify-content-center p-2 mb-2"
-      >
-        <input
-          id="firstName2"
-          class="m-1"
-          type="text"
-          placeholder="First name"
-        />
-        <input
-          id="lastName2"
-          class="m-1"
-          type="text"
-          placeholder="Second name"
-        />
-        <button
-          onclick="onClickSend(2)"
-          type="button"
-          class="btn btn-outline-success mx-auto"
-        >
-          Send
-        </button>
-      </form>
-      <!--Form 3-->
-      <form
-        id="form3"
-        style="visibility: hidden"
-        class="form d-inline-flex flex-column justify-content-center p-2 mb-2"
-      >
-        <input
-          id="firstName3"
-          class="m-1"
-          type="text"
-          placeholder="First name"
-        />
-        <input
-          id="lastName3"
-          class="m-1"
-          type="text"
-          placeholder="Second name"
-        />
-        <button
-          onclick="onClickSend(3)"
-          type="button"
-          class="btn btn-outline-success mx-auto"
-        >
-          Send
-        </button>
-      </form>
-      <!--Form 4-->
-      <form
-        id="form4"
-        style="visibility: hidden"
-        class="form d-inline-flex flex-column justify-content-center p-2 mb-2"
-      >
-        <input
-          id="firstName4"
-          class="m-1"
-          type="text"
-          placeholder="First name"
-        />
-        <input
-          id="lastName4"
-          class="m-1"
-          type="text"
-          placeholder="Second name"
-        />
-        <button
-          onclick="onClickSend(4)"
-          type="button"
-          class="btn btn-outline-success mx-auto"
-        >
-          Send
-        </button>
-      </form>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-3 d-inline-flex p-2 ms-5">
-      <!-- face_detector_selection_control -->
-      <select onchange="changeModel()" class="custom-select" id="model">
-        <option value="ssdMobileNetV1">ssdMobileNetV1</option>
-        <option selected value="tinyFaceDetector">tinyFaceDetector</option>
-      </select>
-    </div>
-    <div class="col-3 d-inline-flex p-2 my-auto" id="confidence-container">
-      <!-- minConf selection control-->
-      <p class="mt-2">Min confidence</p>
+</div>
+<!-- CONTROLLERS -->
+<div class="row">
+  <!-- face_detector_selection_control -->
+<div class="col">
+  <select onchange="changeModel()" class="custom-select" id="model">
+    <option value="ssdMobileNetV1">ssdMobileNetV1</option> 
+    <option selected value="tinyFaceDetector">tinyFaceDetector</option>
+  </select>
+</div>
+<!--minConf selection control-->
+<div class="col">
+  <div class="row" id="confidence-container">
+    <p style="width: fit-content;">Min confidence</p>
       <button onclick="decreaseConfidence()" type="button" class="">
         <span class="material-icons">remove_circle_outline</span>
       </button>
-      <input
-        id="confidenceOutput"
+      <input id="confidenceOutput"
         type="text"
         disabled
         value="0.6"
@@ -245,6 +94,10 @@
       <button onclick="increaseConfidence()" type="button" class="">
         <span class="material-icons">add_circle_outline</span>
       </button>
-    </div>
   </div>
+</div>
+</div>
+  </div>
+</div>
+
 </div>

@@ -1,12 +1,9 @@
-
-  Promise.all([
-    faceapi.loadTinyFaceDetectorModel("../models"),
-    faceapi.loadFaceLandmarkModel("../models"),
-    faceapi.loadFaceRecognitionModel("../models"),
-    faceapi.loadSsdMobilenetv1Model("../models"),
-    
-  ]).then(loadVideo());
-
+Promise.all([
+  faceapi.loadTinyFaceDetectorModel("../models"),
+  faceapi.loadFaceLandmarkModel("../models"),
+  faceapi.loadFaceRecognitionModel("../models"),
+  faceapi.loadSsdMobilenetv1Model("../models"),
+]).then(loadVideo());
 
 let video;
 let videoStream;
@@ -16,7 +13,6 @@ let options = new faceapi.TinyFaceDetectorOptions({
   inputSize: 160,
   scoreThreshold: minConfidence,
 });
-
 let displaySize;
 
 function loadVideo() {
@@ -35,7 +31,6 @@ function loadVideo() {
           document.getElementById("spinner").style.visibility = "hidden";
         }
         document.getElementById("content").style.visibility = "visible";
-        recognizeFace();
         canvas = document.getElementById("canvas");
         displaySize = {
           width: video.width,
@@ -43,21 +38,33 @@ function loadVideo() {
         };
         canvas.style.left = video.getBoundingClientRect().x + "px";
         faceapi.matchDimensions(canvas, displaySize);
+        getDetection();
       });
     })
     .catch(function (err) {
-      new bootstrap.Modal(document.getElementById('cameraAlertModal'), {
-        keyboard: false,
-        focus: true
+      new bootstrap.Modal(document.getElementById("cameraAlertModal"), {
+        focus: true,
       }).show();
       console.log("An error occurred: " + err);
     });
+}
+async function showAddNewUserModal(fd) {
+  video.pause();
+  videoStream.getVideoTracks()[0].stop();
+  new bootstrap.Modal(document.getElementById("addUserModal"), {
+    focus: true,
+  }).show();
+  document.getElementById("modalUserImage").src = await extractFace(fd);
+  document.getElementById("modalTimestamp").value = new Date().toLocaleString();
+  document.getElementById("modalScore").value = fd.detection.score.toFixed(2);
+
+
 }
 
 async function getDetection() {
   let detections = [];
   while (!detections.length) {
-    detections = faceapi.resizeResults(
+    detections = await faceapi.resizeResults(
       await faceapi
         .detectAllFaces(video, options)
         .withFaceLandmarks()
@@ -68,8 +75,12 @@ async function getDetection() {
       canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
     }
   }
+  if (detections.length) {
+    console.log(detections);
+    showAddNewUserModal(detections[0]);
+  }
 
-  return detections;
+  //return detections;
 }
 
 async function getLabeledDescriptors() {
@@ -86,7 +97,7 @@ async function getLabeledDescriptors() {
 let i = 1;
 async function addNewUser(fd) {
   await extractFace(fd).then((imageURL) => {
-    const timeStamp = new Date().toLocaleString(); 
+    const timeStamp = new Date().toLocaleString();
     localStorage.setItem(
       timeStamp,
       JSON.stringify({
@@ -204,8 +215,8 @@ function onClickSend(param) {
       image: document.getElementById("outputImage" + param).src,
       descriptor: image.descriptor,
       score: image.score,
-      firstName: document.getElementById('firstName' + param).value,
-      lastName: document.getElementById('lastName' + param).value,
+      firstName: document.getElementById("firstName" + param).value,
+      lastName: document.getElementById("lastName" + param).value,
     })
   );
 }

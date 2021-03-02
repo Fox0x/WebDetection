@@ -51,6 +51,7 @@ option {
     border: 0;
     color: #6c757d;
     height: 30px;
+    max-width: fit-content;
 }
 
 #confidence-container input {
@@ -59,6 +60,7 @@ option {
     border: 0;
     text-align: center;
     height: 25px;
+    max-width: fit-content;
 }
 
 #confidence-container p {
