@@ -1,4 +1,4 @@
-app.register.controller("LiveCtrl", function () {
+
   Promise.all([
     faceapi.loadTinyFaceDetectorModel("../models"),
     faceapi.loadFaceLandmarkModel("../models"),
@@ -7,16 +7,6 @@ app.register.controller("LiveCtrl", function () {
     
   ]).then(loadVideo());
 
-  //TODO: ------------------------------
-
-  document.onunload = function (event) {
-    console.log("Video closed");
-    // 	  // Пауза
-    // video.pause();
-    // // Стоп
-    // videoStream.getVideoTracks()[0].stop();
-  };
-});
 
 let video;
 let videoStream;
