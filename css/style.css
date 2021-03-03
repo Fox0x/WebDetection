@@ -54,6 +54,10 @@ option {
     max-width: fit-content;
 }
 
+button:focus {
+    outline: transparent 0 !important;
+}
+
 #confidence-container input {
     background: transparent;
     color: #6c757d;

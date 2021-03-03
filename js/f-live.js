@@ -3,7 +3,11 @@ Promise.all([
     faceapi.loadFaceLandmarkModel("../models"),
     faceapi.loadFaceRecognitionModel("../models"),
     faceapi.loadSsdMobilenetv1Model("../models"),
-]).then(loadVideo());
+]).then(async () => {
+    await loadVideo();
+
+});
+
 
 let video;
 let videoStream;
@@ -17,37 +21,33 @@ let displaySize;
 
 
 function loadVideo() {
-    navigator.mediaDevices
-        .getUserMedia({
-            video: true,
-            audio: false,
-        })
-        .then(function (stream) {
-            videoStream = stream;
-            video = document.getElementById("video");
-            video.srcObject = videoStream;
-            video.play();
-            video.addEventListener("playing", () => {
-                if (document.getElementById("spinner") !== null) {
-                    document.getElementById("spinner").style.visibility = "hidden";
-                }
-                document.getElementById("content").style.visibility = "visible";
+    return new Promise((resolve) => {
+        navigator.mediaDevices.getUserMedia({video: true, audio: false,})
+            .then((stream) => {
+                document.getElementById("content").style.visibility === "hidden" && showContent();
+                video = document.getElementById("video");
+                videoStream = stream;
+                video.srcObject = videoStream;
                 canvas = document.getElementById("canvas");
-                displaySize = {
-                    width: video.width,
-                    height: video.height,
-                };
+                displaySize = {width: video.width, height: video.height};
                 canvas.style.left = video.getBoundingClientRect().x + "px";
                 faceapi.matchDimensions(canvas, displaySize);
-                recognizeFace()
-            });
-        })
-        .catch(function (err) {
+                setTimeout(recognizeFace, 500);
+                resolve();
+            }).catch(reason => {
             new bootstrap.Modal(document.getElementById("cameraAlertModal"), {
                 focus: true,
             }).show();
-            console.log("An error occurred: " + err);
+            console.log("An error occurred: " + reason);
         });
+    });
+
+    function showContent() {
+        if (document.getElementById("spinner") !== null) {
+            document.getElementById("spinner").style.visibility = "hidden";
+        }
+        document.getElementById("content").style.visibility = "visible";
+    }
 }
 
 async function showAddNewUserModal(fd) {
@@ -73,7 +73,6 @@ async function showAddNewUserModal(fd) {
 }
 
 async function getDetection() {
-    console.log("getDetection()");
     return new Promise(async (resolve) => {
         let detections = [];
         while (!detections.length) {
@@ -94,10 +93,8 @@ async function getDetection() {
 }
 
 async function getLabeledDescriptors() {
-    console.log("getLabeledDescriptors()");
     await updateLabeledDescriptors();
     if (labeledDescriptors.length) {
-        console.log(labeledDescriptors);
         return labeledDescriptors;
     } else {
         return new Promise(resolve => {
@@ -115,29 +112,30 @@ async function getLabeledDescriptors() {
 
 
 async function addNewUser(fd) {
-    console.log("addNewUser(fd)");
     showAddNewUserModal(fd).then(async () => {
         let imageURL = await extractFace(fd);
-        const timeStamp = new Date().toLocaleString();
+        let recipientFname = document.getElementById("recipient-fname").value;
+        let recipientLname = document.getElementById("recipient-lname").value;
+        let label;
+        recipientFname && recipientLname ? label = recipientFname + " " + recipientLname : label = (new Date()).toLocaleString();
         localStorage.setItem(
-            timeStamp,
+            label,
             JSON.stringify({
                 image: imageURL,
                 descriptor: fd.descriptor,
                 score: fd.detection.score,
-                firstName: document.getElementById("recipient-fname").value || " ",
-                lastName: document.getElementById("recipient-lname").value || " ",
+                firstName: recipientFname,
+                lastName: recipientLname,
             })
         );
         await updateLabeledDescriptors();
-        loadVideo();
-    }).catch(() => {
-        loadVideo();
+        await loadVideo();
+    }).catch(async () => {
+        await loadVideo();
     })
 }
 
 async function recognizeFace() {
-    console.log("recognizeFace()")
     let labeledDescriptors = await getLabeledDescriptors();
     let faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
     let detections = await getDetection();
@@ -153,11 +151,7 @@ async function recognizeFace() {
 //Draw canvas with any label
 function drawBox(canvas, face, label) {
     const drawBox = new faceapi.draw.DrawBox(
-        faceapi.resizeResults(face, displaySize).detection.box,
-        {
-            label,
-        }
-    );
+        faceapi.resizeResults(face, displaySize).detection.box, {label});
     drawBox.draw(canvas);
 }
 
