@@ -57,46 +57,35 @@ async function showAddNewUserModal(fd) {
   document.getElementById("modalUserImage").src = await extractFace(fd);
   document.getElementById("modalTimestamp").value = new Date().toLocaleString();
   document.getElementById("modalScore").value = fd.detection.score.toFixed(2);
-
-
 }
 
 async function getDetection() {
-  let detections = [];
-  while (!detections.length) {
-    detections = await faceapi.resizeResults(
+  return new Promise(async (resolve) => {
+    let resizedDetections = faceapi.resizeResults(
       await faceapi
         .detectAllFaces(video, options)
         .withFaceLandmarks()
         .withFaceDescriptors(),
       displaySize
     );
-    if (canvas) {
-      canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-    }
-  }
-  if (detections.length) {
-    console.log(detections);
-    showAddNewUserModal(detections[0]);
-  }
-
-  //return detections;
+    resizedDetections.length && resolve(resizedDetections);
+  });
 }
 
 async function getLabeledDescriptors() {
   if (!localStorage.length) {
     console.log("localStorage is empty");
     let detections = await getDetection();
-    await detections.forEach(async (fd) => {
+    await detections.forEach((fd) => {
       await addNewUser(fd);
     });
   }
   await updateLabeledDescriptors();
   return labeledDescriptors;
 }
-let i = 1;
+
 async function addNewUser(fd) {
-  await extractFace(fd).then((imageURL) => {
+  extractFace(fd).then((imageURL) => {
     const timeStamp = new Date().toLocaleString();
     localStorage.setItem(
       timeStamp,
@@ -108,47 +97,28 @@ async function addNewUser(fd) {
         lastName: "",
       })
     );
-    if (i <= 4) {
-      document.getElementById("outputImage" + i).src = imageURL;
-      document.getElementById("outputImage" + i).alt = JSON.stringify({
-        timestamp: timeStamp,
-        descriptor: fd.descriptor,
-        score: fd.detection.score,
-      });
-      document.getElementById("form" + i).style.visibility = "visible";
-      i++;
-    } else {
-      i = 1;
-    }
   });
   await updateLabeledDescriptors();
 }
 
 async function recognizeFace() {
-  labeledDescriptors = await getLabeledDescriptors();
-  setInterval(async () => {
-    if (labeledDescriptors.length) {
-      faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
-      //detecting all faces
-      let detections = await getDetection();
-      detections.forEach(async (fd) => {
-        //find best match with first detection
+  getLabeledDescriptors().then((labeledDescriptors) => {
+    faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
+    getDetection().then((detections) => {
+      detections.map((fd) => {
         let bestMatch = faceMatcher.findBestMatch(fd.descriptor, 0.5);
-        //If person is unknown
-        if (bestMatch.label === "unknown") {
-          await addNewUser(fd);
-        } else {
-          drawBox(
-            canvas,
-            fd,
-            bestMatch.label +
-              "  " +
-              ((100 - bestMatch.distance * 100).toFixed(1) + "%")
-          );
-        }
+        bestMatch.label !== "unknown"
+          ? addNewUser(fd)
+          : drawBox(
+              canvas,
+              fd,
+              bestMatch.label +
+                "  " +
+                ((100 - bestMatch.distance * 100).toFixed(1) + "%")
+            );
       });
-    } else getLabeledDescriptors();
-  }, 100);
+    });
+  });
 }
 
 //Draw canvas with any label
