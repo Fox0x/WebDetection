@@ -75,20 +75,29 @@ async function showAddNewUserModal(fd) {
 async function getDetection() {
     console.log("getDetection()");
     return new Promise(async (resolve) => {
-        let resizedDetections = faceapi.resizeResults(
-            await faceapi
-                .detectAllFaces(video, options)
-                .withFaceLandmarks()
-                .withFaceDescriptors(),
-            displaySize
-        );
-        resizedDetections.length && resolve(resizedDetections);
+        let detections = [];
+        while (!detections.length) {
+            detections = faceapi.resizeResults(
+                await faceapi
+                    .detectAllFaces(video, options)
+                    .withFaceLandmarks()
+                    .withFaceDescriptors(),
+                displaySize
+            );
+            if (canvas) {
+                canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        detections.length && resolve(detections);
     });
 }
 
 async function getLabeledDescriptors() {
     console.log("getLabeledDescriptors()");
+    await updateLabeledDescriptors();
     if (labeledDescriptors.length) {
+        console.log(labeledDescriptors);
         return labeledDescriptors;
     } else {
         return new Promise(resolve => {
@@ -121,7 +130,7 @@ async function addNewUser(fd) {
             })
         );
         await updateLabeledDescriptors();
-        await recognizeFace();
+        loadVideo();
     }).catch(() => {
         loadVideo();
     })
@@ -129,23 +138,16 @@ async function addNewUser(fd) {
 
 async function recognizeFace() {
     console.log("recognizeFace()")
-    getLabeledDescriptors().then((labeledDescriptors) => {
-        faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
-        getDetection().then((detections) => {
-            detections.map((fd) => {
-                let bestMatch = faceMatcher.findBestMatch(fd.descriptor, 0.5);
-                bestMatch.label !== "unknown"
-                    ? addNewUser(fd)
-                    : drawBox(
-                    canvas,
-                    fd,
-                    bestMatch.label +
-                    "  " +
-                    ((100 - bestMatch.distance * 100).toFixed(1) + "%")
-                    );
-            });
-        });
+    let labeledDescriptors = await getLabeledDescriptors();
+    let faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
+    let detections = await getDetection();
+    await detections.map(async (fd) => {
+        let bestMatch = faceMatcher.findBestMatch(fd.descriptor, 0.5);
+        bestMatch.label === "unknown" ?
+            await addNewUser(fd) :
+            drawBox(canvas, fd, bestMatch.label + "  " + ((100 - bestMatch.distance * 100).toFixed(1) + "%"));
     });
+    await recognizeFace();
 }
 
 //Draw canvas with any label
