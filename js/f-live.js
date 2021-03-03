@@ -38,7 +38,7 @@ function loadVideo() {
         };
         canvas.style.left = video.getBoundingClientRect().x + "px";
         faceapi.matchDimensions(canvas, displaySize);
-        getDetection();
+        recognizeFace()
       });
     })
     .catch(function (err) {
@@ -49,17 +49,28 @@ function loadVideo() {
     });
 }
 async function showAddNewUserModal(fd) {
-  video.pause();
-  videoStream.getVideoTracks()[0].stop();
-  new bootstrap.Modal(document.getElementById("addUserModal"), {
-    focus: true,
-  }).show();
-  document.getElementById("modalUserImage").src = await extractFace(fd);
-  document.getElementById("modalTimestamp").value = new Date().toLocaleString();
-  document.getElementById("modalScore").value = fd.detection.score.toFixed(2);
+  return new Promise(resolve =>{
+    video.pause();
+    videoStream.getVideoTracks()[0].stop();
+    new bootstrap.Modal(document.getElementById("addUserModal"), {
+        focus: true,
+      }).show();
+      document.getElementById("modalUserImage").src = await extractFace(fd);
+      document.getElementById("modalTimestamp").value = new Date().toLocaleString();
+      document.getElementById("modalScore").value = fd.detection.score.toFixed(2);
+  });
+  // video.pause();
+  // videoStream.getVideoTracks()[0].stop();
+  // new bootstrap.Modal(document.getElementById("addUserModal"), {
+  //   focus: true,
+  // }).show();
+  // document.getElementById("modalUserImage").src = await extractFace(fd);
+  // document.getElementById("modalTimestamp").value = new Date().toLocaleString();
+  // document.getElementById("modalScore").value = fd.detection.score.toFixed(2);
 }
 
 async function getDetection() {
+  console.log("getDetection()");
   return new Promise(async (resolve) => {
     let resizedDetections = faceapi.resizeResults(
       await faceapi
@@ -73,35 +84,42 @@ async function getDetection() {
 }
 
 async function getLabeledDescriptors() {
-  if (!localStorage.length) {
-    console.log("localStorage is empty");
-    let detections = await getDetection();
-    await detections.forEach((fd) => {
-      await addNewUser(fd);
+  console.log("getLabeledDescriptors()");
+  if (labeledDescriptors.length) {
+    return labeledDescriptors;
+  } else {
+    return new Promise(resolve =>{
+      if (!localStorage.length) {
+        getDetection().then((detection) => {
+          detection.map((fd) => {
+            addNewUser(fd);
+          });
+        });
+      }
+      labeledDescriptors.length&&resolve(labeledDescriptors);
     });
   }
-  await updateLabeledDescriptors();
-  return labeledDescriptors;
 }
-
+//TODO: исправить
 async function addNewUser(fd) {
-  extractFace(fd).then((imageURL) => {
-    const timeStamp = new Date().toLocaleString();
-    localStorage.setItem(
-      timeStamp,
-      JSON.stringify({
-        image: imageURL,
-        descriptor: fd.descriptor,
-        score: fd.detection.score,
-        firstName: "",
-        lastName: "",
-      })
-    );
-  });
-  await updateLabeledDescriptors();
+  console.log("addNewUser(fd)")
+  let imageURL = extractFace(fd);
+  const timeStamp = new Date().toLocaleString();
+  localStorage.setItem(
+    timeStamp,
+    JSON.stringify({
+      image: imageURL,
+      descriptor: fd.descriptor,
+      score: fd.detection.score,
+      firstName: "",
+      lastName: "",
+    })
+  );
+  updateLabeledDescriptors();
 }
 
 async function recognizeFace() {
+  console.log("recognizeFace()")
   getLabeledDescriptors().then((labeledDescriptors) => {
     faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
     getDetection().then((detections) => {
@@ -174,19 +192,5 @@ function changeModel() {
       }));
   console.log(
     "Model " + options._name + " with confidence " + options._minConfidence
-  );
-}
-
-function onClickSend(param) {
-  const image = JSON.parse(document.getElementById("outputImage" + param).alt);
-  localStorage.setItem(
-    image.timestamp,
-    JSON.stringify({
-      image: document.getElementById("outputImage" + param).src,
-      descriptor: image.descriptor,
-      score: image.score,
-      firstName: document.getElementById("firstName" + param).value,
-      lastName: document.getElementById("lastName" + param).value,
-    })
   );
 }
