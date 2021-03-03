@@ -1,103 +1,101 @@
-<div class="container" id="live" controller="LiveCtrl">
-  <!-- addUserModal -->
-  <div
-    class="modal fade"
-    data-bs-backdrop="static" data-bs-keyboard="false"
-    tabindex="-1"
-    id="addUserModal"
-  >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">New person fond!</h5>
-        </div>
-        <div class="modal-body" style="text-align: center">
-          <p>Add this user?</p>
-          <div class="row">
-            <div class="col">
-              <img id="modalUserImage" width="200" height="230" src="" alt="" />
-              <form class="mt-2">
-                <div class="mb-1">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="recipient-fname"
-                  />
+<div class="container" controller="LiveCtrl" id="live">
+    <!-- addUserModal -->
+    <div
+            class="modal fade"
+            data-bs-backdrop="static" data-bs-keyboard="false"
+            id="addUserModal"
+            tabindex="-1"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New person fond!</h5>
                 </div>
-                <div class="mb-1">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="recipient-lname"
-                  />
+                <div class="modal-body" style="text-align: center">
+                    <p>Add this user?</p>
+                    <div class="row">
+                        <div class="col">
+                            <img alt="" height="230" id="modalUserImage" src="" width="200"/>
+                            <form class="mt-2">
+                                <div class="mb-1">
+                                    <input
+                                            class="form-control"
+                                            id="recipient-fname"
+                                            type="text"
+                                    />
+                                </div>
+                                <div class="mb-1">
+                                    <input
+                                            class="form-control"
+                                            id="recipient-lname"
+                                            type="text"
+                                    />
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col">
+                            <label for="modalTimestamp">Timestamp:</label>
+                            <input disabled id="modalTimestamp"
+                                   style="background-color: transparent; border: 0; text-align: center;"
+                                   type="text"/>
+                            <label for="modalScore">Score: </label>
+                            <input disabled id="modalScore"
+                                   style="background-color: transparent; border: 0; text-align: center;"
+                                   type="text"/>
+                        </div>
+                    </div>
                 </div>
-              </form>
+                <div class="modal-footer">
+                    <button id="rejectUserButton" class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+                    <button id="acceptUserButton" class="btn btn-primary" type="button">Save changes</button>
+                </div>
             </div>
-            <div class="col">
-              <label for="modalTimestamp">Timestamp:</label>
-              <input id="modalTimestamp" type="text" disabled style="background-color: transparent; border: 0; text-align: center;"/>
-              <label for="modalScore">Score: </label>
-              <input id="modalScore" type="text" disabled style="background-color: transparent; border: 0; text-align: center;"/>
-            </div>
-          </div>
         </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Close
-          </button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
     </div>
-  </div>
-  <!-- ======================================================= -->
-  <div class="container" style="text-align: center;">
-    <!--PLAYER-->
-    <div class="col mt-4">
-      <video
-        preload="auto"
-        autoplay
-        id="video"
-        muted
-        playsinline
-        width="720"
-        height="550"
-      ></video>
-      <canvas id="canvas"></canvas>
-</div>
-<!-- CONTROLLERS -->
-<div class="row">
-  <!-- face_detector_selection_control -->
-<div class="col">
-  <select onchange="changeModel()" class="custom-select" id="model">
-    <option value="ssdMobileNetV1">ssdMobileNetV1</option> 
-    <option selected value="tinyFaceDetector">tinyFaceDetector</option>
-  </select>
-</div>
-<!--minConf selection control-->
-<div class="col">
-  <div class="row" id="confidence-container">
-    <p style="width: fit-content;">Min confidence</p>
-      <button onclick="decreaseConfidence()" type="button" class="">
-        <span class="material-icons">remove_circle_outline</span>
-      </button>
-      <input id="confidenceOutput"
-        type="text"
-        disabled
-        value="0.6"
-        style="width: 60px"
-      />
-      <button onclick="increaseConfidence()" type="button" class="">
-        <span class="material-icons">add_circle_outline</span>
-      </button>
-  </div>
-</div>
-</div>
-  </div>
+    <!-- ======================================================= -->
+    <div class="container" style="text-align: center;">
+        <!--PLAYER-->
+        <div class="col mt-4">
+            <video
+                    autoplay
+                    height="550"
+                    id="video"
+                    muted
+                    playsinline
+                    preload="auto"
+                    width="720"
+            ></video>
+            <canvas id="canvas"></canvas>
+        </div>
+        <!-- CONTROLLERS -->
+        <div class="row">
+            <!-- face_detector_selection_control -->
+            <div class="col">
+                <select class="custom-select" id="model" onchange="changeModel()">
+                    <option value="ssdMobileNetV1">ssdMobileNetV1</option>
+                    <option selected value="tinyFaceDetector">tinyFaceDetector</option>
+                </select>
+            </div>
+            <!--minConf selection control-->
+            <div class="col">
+                <div class="row" id="confidence-container">
+                    <p style="width: fit-content;">Min confidence</p>
+                    <button class="" onclick="decreaseConfidence()" type="button">
+                        <span class="material-icons">remove_circle_outline</span>
+                    </button>
+                    <input disabled
+                           id="confidenceOutput"
+                           style="width: 60px"
+                           type="text"
+                           value="0.6"
+                    />
+                    <button class="" onclick="increaseConfidence()" type="button">
+                        <span class="material-icons">add_circle_outline</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 </div>
