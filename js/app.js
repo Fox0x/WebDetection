@@ -11,6 +11,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
     .state("live", {
       url: "/live",
       templateUrl: "views/live.htm",
+      controller: "LiveCtrl",
       resolve: {
         loadPlugin: function ($ocLazyLoad) {
           return $ocLazyLoad.load({
