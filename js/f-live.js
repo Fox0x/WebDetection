@@ -4,7 +4,8 @@ Promise.all([
     faceapi.loadFaceRecognitionModel("../models"),
     faceapi.loadSsdMobilenetv1Model("../models"),
 ]).then(async () => {
-    await loadVideo().then()
+    await loadVideo().then(recognizeFace)
+
 });
 //========================================================//
 let video;
@@ -32,10 +33,9 @@ async function loadVideo() {
                 displaySize = {width: video.width, height: video.height};
                 canvas.style.left = video.getBoundingClientRect().x + "px";
                 faceapi.matchDimensions(canvas, displaySize);
-                video.addEventListener('playing', event => {
+                video.addEventListener('playing', async event => {
                     canvas.style.left = video.getBoundingClientRect().x + "px";
                     resolve();
-                    recognizeFace();
                 });
             }).catch(reason => {
             new bootstrap.Modal(document.getElementById("cameraAlertModal"), {
@@ -67,7 +67,6 @@ async function getDetections() {
             canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         }
     }
-
     return detections;
 }
 
@@ -92,7 +91,6 @@ async function showAddNewUserModal(fd) {
     const addUserModal = new bootstrap.Modal(document.getElementById("addUserModal"), {focus: true});
     return new Promise(async (resolve, reject) => {
         video.pause();
-        videoStream.getVideoTracks()[0].stop();
         addUserModal.show();
         const imageURL = await extractFace(fd);
         const timestamp = (new Date).toLocaleString();
@@ -109,15 +107,19 @@ async function showAddNewUserModal(fd) {
             addNewUser(label, imageURL, descriptor, score, recipientFname, recipientLname)
                 .then(async () => {
                     addUserModal.hide();
-                    await loadVideo();
-                    resolve();
+                    await loadVideo().then(async () => {
+                        resolve();
+                        await recognizeFace();
+                    })
                 });
         });
 
         document.getElementById("rejectUserButton").addEventListener('click', async event => {
             addUserModal.hide();
-            await loadVideo();
-            reject();
+            await loadVideo().then(async () => {
+                reject();
+                await recognizeFace();
+            });
         });
     });
 }
@@ -140,8 +142,8 @@ async function addNewUser(label, imageURL, descriptor, score, recipientFname, re
 async function recognizeFace() {
     const labeledDescriptors = await getLabeledDescriptors()
     const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
-    getDetections().then((detections) => {
-        detections.map(async (fd) => {
+    getDetections().then(async (detections) => {
+        await detections.map(async (fd) => {
             let bestMatch = faceMatcher.findBestMatch(fd.descriptor, 0.5);
             if (bestMatch.label === "unknown") {
                 await showAddNewUserModal(fd)
@@ -162,7 +164,6 @@ function drawBox(canvas, face, label) {
 
 //return url from a faceDetection
 async function extractFace(face) {
-    console.log("extractFace()")
     let box = face.detection.box;
     await faceapi
         .extractFaces(video, [
