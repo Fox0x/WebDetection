@@ -17,7 +17,6 @@ let options = new faceapi.TinyFaceDetectorOptions({
     scoreThreshold: minConfidence,
 });
 let displaySize;
-let isRecognizing = true;
 
 //========================================================//
 
@@ -201,7 +200,7 @@ function changeModel() {
             minConfidence,
             maxResults: 10,
         }));
-    console.log("Model " + options._name + " with confidence " + options._minConfidence && options._scoreThreshold);
+    console.log("Model " + options._name + " with confidence " + (options._minConfidence || options._scoreThreshold));
 }
 
 //========================================================//
