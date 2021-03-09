@@ -1,20 +1,20 @@
-const SERVER_URL = "http://localhost:3010/fa6_api/processing";
-const TOKEN = "7c47ebaf57bb7b870182ae3d36443190";
-
-async function getNewTaskID() {
-    let myHeaders = new Headers();
-    myHeaders.append("Authorization", TOKEN);
-    myHeaders.append("Content-Type", "multipart/form-data");
+async function auth() {
 
     let requestOptions = {
         method: 'POST',
-        headers: myHeaders,
-        body: undefined,
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: {
+            email: "Admin@Admin",
+            password: "@@@dmin",
+            clientid: "1",
+            locationid: "1"
+        },
         redirect: 'follow'
     };
 
-    fetch(SERVER_URL, requestOptions)
-        .then(response => response.text())
-        .then(result => console.log(result))
+    fetch("http://localhost:3010/fa6_api/authenticate", requestOptions)
+        .then(response => console.log(response))
         .catch(error => console.log('error', error));
 }

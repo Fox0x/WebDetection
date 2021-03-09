@@ -14,7 +14,9 @@
 }
 
 .body {
-    background-color: #131516;
+    background-image: url("../img/all.jpg");
+    background-repeat: repeat;
+    background-size: unset;
 }
 
 #video {
@@ -35,10 +37,11 @@ canvas {
     width: 80px;
 }
 
-select {
+.model-select {
     background: transparent;
     border: 0;
     color: #6c757d;
+    margin-left: 50%;
 }
 
 option {
@@ -51,7 +54,7 @@ option {
     border: 0;
     color: #6c757d;
     height: 30px;
-    max-width: fit-content;
+    max-width: max-content;
 }
 
 button:focus {
@@ -64,13 +67,14 @@ button:focus {
     border: 0;
     text-align: center;
     height: 25px;
-    max-width: fit-content;
+    max-width: max-content;
 }
 
 #confidence-container p {
     color: #6c757d;
     margin-right: 20px;
     margin-top: 0 !important;
+    width: max-content;
 
 }
 

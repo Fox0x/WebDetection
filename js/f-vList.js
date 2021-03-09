@@ -44,7 +44,6 @@ function fillVisitList() {
         deleteVisitButton.className = "btn btn-outline-danger";
         deleteVisitButton.innerHTML = "&#10006";
         const acceptVisitButton = document.createElement("button");
-        acceptVisitButton.id = label;
         acceptVisitButton.className = "btn btn-outline-success btn-accept-user";
         acceptVisitButton.innerHTML = "&#10004;&#65039;";
         visitListcontainer.appendChild(col);
@@ -68,8 +67,8 @@ function fillVisitList() {
                 firstName: _fName,
                 lastName: _lName,
             }));
-
         }
+
         deleteVisitButton.onclick = () => {
             localStorage.removeItem(label);
             location.reload();
