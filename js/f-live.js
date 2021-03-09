@@ -163,17 +163,10 @@ function drawBox(canvas, face, label) {
 
 //return url from a faceDetection
 async function extractFace(face) {
-    let box = face.detection.box;
-    await faceapi
-        .extractFaces(video, [
-            new faceapi.Rect(box.x - 70, box.y - 90, box.width + 70, box.height + 90),
-        ])
-        .then((resolve) => {
-            resolve.forEach((resolve) => {
-                canvas = resolve;
-            });
-        });
-    return canvas.toDataURL();
+    const box = face.detection.box;
+    const regionsToExtract = [new faceapi.Rect(box.x - 70, box.y - 90, box.width + 70, box.height + 90)];
+    const faceCanvas = await faceapi.extractFaces(video, regionsToExtract);
+    return faceCanvas[0].toDataURL("image/png", 1.0);
 }
 
 //Controllers func
