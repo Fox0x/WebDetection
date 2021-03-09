@@ -1,5 +1,5 @@
-app.register.controller("VListCtrl", function ($scope) {
-    fillVisitList();
+app.register.controller("SListCtrl", function ($scope) {
+    fillSubjectList();
     if (document.getElementById("spinner") !== null) {
         document.getElementById("spinner").style.visibility = "hidden";
     }
@@ -10,15 +10,14 @@ app.register.controller("VListCtrl", function ($scope) {
     }
 });
 
-function fillVisitList() {
-    console.log("fill visit list");
+function fillSubjectList() {
     for (let key in localStorage) {
         if (!localStorage.hasOwnProperty(key)) {
             continue; // пропустит такие ключи, как "setItem", "getItem" и так далее
         }
         const person = JSON.parse(localStorage.getItem(key));
 
-        createNewVisit(
+        createNewSubject(
             person.image,
             person.score,
             person.firstName,
@@ -27,8 +26,8 @@ function fillVisitList() {
         );
     }
 
-    function createNewVisit(image, score, firstName, lastName, label) {
-        const visitListcontainer = document.getElementById("visitList");
+    function createNewSubject(image, score, firstName, lastName, label) {
+        const subjectListcontainer = document.getElementById("subjectList");
         const col = document.createElement("div");
         col.className = "col-2 m-3 p-0";
 
@@ -40,20 +39,20 @@ function fillVisitList() {
         const lName = document.createElement("input");
         lName.id = "l-name-" + label;
         lName.placeholder = lastName || "score: " + score;
-        const deleteVisitButton = document.createElement("button");
-        deleteVisitButton.className = "btn btn-outline-danger";
-        deleteVisitButton.innerHTML = "&#10006";
-        const acceptVisitButton = document.createElement("button");
-        acceptVisitButton.className = "btn btn-outline-success btn-accept-user";
-        acceptVisitButton.innerHTML = "&#10004;&#65039;";
-        visitListcontainer.appendChild(col);
+        const deleteSubjectButton = document.createElement("button");
+        deleteSubjectButton.className = "btn btn-outline-danger";
+        deleteSubjectButton.innerHTML = "&#10006";
+        const acceptSubjectButton = document.createElement("button");
+        acceptSubjectButton.className = "btn btn-outline-success btn-accept-user";
+        acceptSubjectButton.innerHTML = "&#10004;&#65039;";
+        subjectListcontainer.appendChild(col);
         col.appendChild(imgEl);
         col.appendChild(fName);
         col.appendChild(lName);
         col.appendChild(document.createElement("br"));
-        col.appendChild(deleteVisitButton);
-        col.appendChild(acceptVisitButton);
-        acceptVisitButton.onclick = () => {
+        col.appendChild(deleteSubjectButton);
+        col.appendChild(acceptSubjectButton);
+        acceptSubjectButton.onclick = () => {
 
             const usr = JSON.parse(localStorage.getItem(label));
             localStorage.removeItem(label);
@@ -69,10 +68,10 @@ function fillVisitList() {
             }));
         }
 
-        deleteVisitButton.onclick = () => {
+        deleteSubjectButton.onclick = () => {
             localStorage.removeItem(label);
             location.reload();
-            fillVisitList();
+            fillSubjectList();
         };
         col.appendChild;
     }

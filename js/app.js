@@ -20,22 +20,35 @@ app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
         },
       },
     })
-    .state("visits", {
-      url: "/visits",
-      templateUrl: "views/visitList.htm",
-      controller: "VListCtrl",
-      resolve: {
-        loadPlugin: function ($ocLazyLoad) {
-          return $ocLazyLoad.load({
-            files: ["css/visitList.css", "js/f-vList.js"],
-          });
+
+      .state("subjects", {
+        url: "/subjects",
+        templateUrl: "views/subjectList.htm",
+        controller: "SListCtrl",
+        resolve: {
+          loadPlugin: function ($ocLazyLoad) {
+            return $ocLazyLoad.load({
+              files: ["css/subjectList.css", "js/f-subjectList.js"],
+            });
+          },
         },
-      },
-    });
+      })
+
+      .state("visits", {
+        url: "/visits",
+        templateUrl: "views/visitList.htm",
+        controller: "VListCtrl",
+        resolve: {
+          loadPlugin: function ($ocLazyLoad) {
+            return $ocLazyLoad.load({
+              files: ["css/visitList.css", "js/f-visitList.js"],
+            });
+          },
+        },
+      })
 });
 
 async function updateLabeledDescriptors() {
-  labeledDescriptors = [];
   for(let key in localStorage) {
     if (!localStorage.hasOwnProperty(key)) {
       continue; // пропустит такие ключи, как "setItem", "getItem" и так далее
