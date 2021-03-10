@@ -89,3 +89,8 @@ button:focus {
     margin-right: -50%;
     color: #6c757d;
 }
+
+#add-user-form input {
+    width: 200px;
+    text-align: center;
+}

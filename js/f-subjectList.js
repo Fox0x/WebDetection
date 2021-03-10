@@ -1,5 +1,5 @@
-app.register.controller("SListCtrl", function ($scope) {
-    fillSubjectList();
+app.register.controller("SListCtrl", function () {
+
     if (document.getElementById("spinner") !== null) {
         document.getElementById("spinner").style.visibility = "hidden";
     }
@@ -8,25 +8,18 @@ app.register.controller("SListCtrl", function ($scope) {
         video.pause();
         videoStream.getVideoTracks()[0].stop();
     }
+    if (localStorage.length) {
+        fillSubjectList();
+    } else {
+        new bootstrap.Modal(document.getElementById("emptySubjectAlertModal"), {}).show();
+    }
 });
 
 function fillSubjectList() {
-    for (let key in localStorage) {
-        if (!localStorage.hasOwnProperty(key)) {
-            continue; // пропустит такие ключи, как "setItem", "getItem" и так далее
-        }
-        const person = JSON.parse(localStorage.getItem(key));
+    const users = JSON.parse(localStorage.users);
+    users.forEach(user => createNewSubject(user.image, user.score, user.firstName, user.lastName, user.label, user.created))
 
-        createNewSubject(
-            person.image,
-            person.score,
-            person.firstName,
-            person.lastName,
-            key
-        );
-    }
-
-    function createNewSubject(image, score, firstName, lastName, label) {
+    function createNewSubject(image, score, firstName, lastName, label, timestamp) {
         const subjectListcontainer = document.getElementById("subjectList");
         const col = document.createElement("div");
         col.className = "col-2 m-3 p-0";
@@ -35,14 +28,16 @@ function fillSubjectList() {
         imgEl.src = image;
         const fName = document.createElement("input");
         fName.id = "f-name-" + label;
-        fName.placeholder = firstName || label;
+        fName.placeholder = firstName || timestamp;
         const lName = document.createElement("input");
         lName.id = "l-name-" + label;
         lName.placeholder = lastName || "score: " + score;
         const deleteSubjectButton = document.createElement("button");
+        deleteSubjectButton.id = "delete-" + label;
         deleteSubjectButton.className = "btn btn-outline-danger";
         deleteSubjectButton.innerHTML = "&#10006";
         const acceptSubjectButton = document.createElement("button");
+        acceptSubjectButton.id = "accept-" + label;
         acceptSubjectButton.className = "btn btn-outline-success btn-accept-user";
         acceptSubjectButton.innerHTML = "&#10004;&#65039;";
         subjectListcontainer.appendChild(col);
@@ -54,24 +49,27 @@ function fillSubjectList() {
         col.appendChild(acceptSubjectButton);
         acceptSubjectButton.onclick = () => {
 
-            const usr = JSON.parse(localStorage.getItem(label));
-            localStorage.removeItem(label);
-            const _fName = document.getElementById("f-name-" + label).value || firstName;
-            const _lName = document.getElementById("l-name-" + label).value || lastName;
-            const _label = _fName + " " + _lName;
-            localStorage.setItem(_label, JSON.stringify({
-                image: usr.image,
-                descriptor: usr.descriptor,
-                score: usr.score,
-                firstName: _fName,
-                lastName: _lName,
-            }));
+            const fName = document.getElementById("f-name-" + label).value,
+                fName_ph = document.getElementById("f-name-" + label).getAttribute("placeholder");
+            users.find(user => user.label === label).firstName = fName || fName_ph;
+
+            const lName = document.getElementById("l-name-" + label).value,
+                lName_ph = document.getElementById("l-name-" + label).getAttribute("placeholder");
+            users.find(user => user.label === label).lastName = lName || lName_ph;
+
+            users.find(user => user.label).label = ((fName || users) + "_" + (lName || lName_ph));
+            localStorage.setItem("users", JSON.stringify(users));
+            location.reload();
         }
 
         deleteSubjectButton.onclick = () => {
-            localStorage.removeItem(label);
-            location.reload();
-            fillSubjectList();
+            const index = users.indexOf(users.find(user => user.label === label));
+            if (index > -1) {
+                users.splice(index, 1);
+            }
+            users.length ?
+                localStorage.setItem("users", JSON.stringify(users)) : localStorage.clear();
+            location.reload()
         };
         col.appendChild;
     }

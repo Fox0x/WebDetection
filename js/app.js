@@ -9,16 +9,16 @@ app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
 
   $stateProvider
     .state("live", {
-      url: "/live",
-      templateUrl: "views/live.htm",
-      // controller: "LiveCtrl",
-      resolve: {
-        loadPlugin: function ($ocLazyLoad) {
-          return $ocLazyLoad.load({
-            files: ["js/f-live.js"],
-          });
+        url: "/live",
+        templateUrl: "views/live.htm",
+        controller: "LiveCtrl",
+        resolve: {
+            loadPlugin: function ($ocLazyLoad) {
+                return $ocLazyLoad.load({
+                    files: ["js/f-live.js"],
+                });
+            },
         },
-      },
     })
 
       .state("subjects", {
@@ -47,15 +47,3 @@ app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
         },
       })
 });
-
-async function updateLabeledDescriptors() {
-  for(let key in localStorage) {
-    if (!localStorage.hasOwnProperty(key)) {
-      continue; // пропустит такие ключи, как "setItem", "getItem" и так далее
-    }
-    const descriptor = Float32Array.from(Object.values(JSON.parse(localStorage.getItem(key)).descriptor));
-    labeledDescriptors.push(
-      new faceapi.LabeledFaceDescriptors(key, [descriptor])
-    );
-  }
-}
