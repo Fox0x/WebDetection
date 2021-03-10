@@ -17,6 +17,7 @@ let options = new faceapi.TinyFaceDetectorOptions({
     scoreThreshold: minConfidence,
 });
 let displaySize;
+let users = []
 
 //========================================================//
 
@@ -70,84 +71,140 @@ async function getDetections() {
 }
 
 async function getLabeledDescriptors() {
-    await updateLabeledDescriptors();
-    if (labeledDescriptors.length) {
-        return labeledDescriptors;
-    } else {
-        return new Promise(async resolve => {
-            if (!localStorage.length) {
-                let detections = await getDetections();
-                detections.map(async detection => {
-                    await showAddNewUserModal(detection);
+    return new Promise((resolve => {
+        if (labeledDescriptors.length) {
+            resolve(labeledDescriptors);
+        } else if (localStorage.length) {
+            users = JSON.parse(localStorage.users);
+            users.forEach(user => {
+                user.descriptor.forEach((descriptor, index) => {
+                    user.descriptor[index] = Float32Array.from(Object.values(descriptor));
                 })
-            }
-            labeledDescriptors.length && resolve(labeledDescriptors);
-        });
-    }
+            })
+            users.forEach(user => {
+                labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(
+                    user.firstName + ' ' + user.lastName,
+                    user.descriptor
+                ));
+            })
+            resolve(labeledDescriptors);
+        } else {
+            getDetections().then(detections => {
+                detections.map(async face => {
+                    showAddNewUserModal(await extractFace(face), face.detection.score).then(async () => {
+                        await addNewUser(face);
+                        resolve(labeledDescriptors);
+                    })
+                })
+            })
+        }
+    }))
+    // if (labeledDescriptors.length) {
+    //     resolve(labeledDescriptors);
+    // } else {
+    //     if (localStorage.length) {
+    //         users = JSON.parse(localStorage.getItem(users));
+    //         console.log(users);
+    //     } else {
+    //         getDetections().then((detections) => {
+    //             detections.forEach(async face => {
+    //                 await showAddNewUserModal(await extractFace(face), face.detection.score)
+    //                     .then(async () => await addNewUser(face).then(async () => {
+    //                         await users.forEach(user => {
+    //                             labeledDescriptors.push(
+    //                                 new faceapi.LabeledFaceDescriptors(
+    //                                     user.firstName + ' ' + user.lastName,
+    //                                     [user.descriptor]
+    //                                 ));
+    //
+    //                         });
+    //                         console.log(labeledDescriptors);
+    //                         resolve(labeledDescriptors)
+    //                     }));
+    //             });
+    //         });
+    //     }
+    // }
+
+
 }
 
-async function showAddNewUserModal(fd) {
+async function showAddNewUserModal(faceImage, score) {
     const addUserModal = new bootstrap.Modal(document.getElementById("addUserModal"), {focus: true});
     return new Promise(async (resolve, reject) => {
         video.pause();
         addUserModal.show();
-        const imageURL = await extractFace(fd);
-        const timestamp = (new Date).toLocaleString();
-        const score = fd.detection.score.toFixed(2);
-        document.getElementById("modalUserImage").src = imageURL;
-        document.getElementById("modalTimestamp").value = timestamp;
+        document.getElementById("modalUserImage").src = faceImage;
         document.getElementById("modalScore").value = score;
         document.getElementById("acceptUserButton").addEventListener('click', event => {
-            const descriptor = fd.descriptor;
-            const recipientFname = document.getElementById("recipient-fname").value;
-            const recipientLname = document.getElementById("recipient-lname").value;
-            let label;
-            recipientFname && recipientLname ? label = recipientFname + " " + recipientLname : label = timestamp;
-            addNewUser(label, imageURL, descriptor, score, recipientFname, recipientLname)
-                .then(async () => {
-                    addUserModal.hide();
-                    await loadVideo().then(async () => {
-                        resolve();
-                        await recognizeFace();
-                    })
-                });
-        });
-
-        document.getElementById("rejectUserButton").addEventListener('click', async event => {
             addUserModal.hide();
-            await loadVideo().then(async () => {
-                reject();
-                await recognizeFace();
-            });
+            video.play();
+            resolve()
+        });
+        document.getElementById("rejectUserButton").addEventListener('click', event => {
+            addUserModal.hide();
+            video.play();
+            reject()
         });
     });
 }
 
-async function addNewUser(label, imageURL, descriptor, score, recipientFname, recipientLname) {
+async function addNewUser(face) {
     return new Promise(async resolve => {
-        localStorage.setItem(label, JSON.stringify({
-                image: imageURL,
-                descriptor: descriptor,
-                score: score,
-                firstName: recipientFname,
-                lastName: recipientLname,
-            })
-        );
-        await updateLabeledDescriptors();
-        resolve()
+        const firstName = document.getElementById("recipient-fname").value;
+        const lastName = document.getElementById("recipient-lname").value
+        if (!users.some(user => user.id === firstName + "_" + lastName)) {
+            console.log("Add new user")
+            users.push(
+                {
+                    id: firstName + "_" + lastName,
+                    image: await extractFace(face),
+                    descriptor: [face.descriptor],
+                    score: face.detection.score,
+                    firstName,
+                    lastName,
+                    created: (new Date).toLocaleString()
+                }
+            );
+
+        } else {
+            console.log("User exists");
+            let descriptor = users.find(user => user.id === firstName + "_" + lastName)["descriptor"];
+            descriptor.push(face.descriptor);
+            users.find(user => user.id === firstName + "_" + lastName)["descriptor"] = descriptor;
+            // let descriptor = [];
+            // descriptor.push(Float32Array.from(Object.values(users.find(user => user.id === firstName + "_" + lastName)["descriptor"])));
+            // descriptor.push(face.descriptor);
+            // users.find(user => user.id === firstName + "_" + lastName)["descriptor"] = descriptor;
+            // console.log(users);
+        }
+        console.log("Save users to localStorage");
+        localStorage.setItem("users", JSON.stringify(users));
+        console.log("Update labeledDescriptors");
+        users.forEach(user => {
+            labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(
+                user.firstName + ' ' + user.lastName,
+                user.descriptor
+            ));
+        })
+        resolve();
     });
 }
 
 async function recognizeFace() {
     const labeledDescriptors = await getLabeledDescriptors()
     const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
-    getDetections().then(async (detections) => {
-        await detections.map(async (fd) => {
-            let bestMatch = faceMatcher.findBestMatch(fd.descriptor, 0.5);
+    await getDetections().then(async (detections) => {
+        await detections.map(async (face) => {
+            let bestMatch = faceMatcher.findBestMatch(face.descriptor, 0.5);
             if (bestMatch.label === "unknown") {
-                await showAddNewUserModal(fd)
+                const faceImage = await extractFace(face)
+                showAddNewUserModal(faceImage, face.detection.score).then(async () => {
+                    await addNewUser(face)
+                    await recognizeFace();
+                }).catch(async () => await recognizeFace());
             } else {
-                drawBox(canvas, fd, bestMatch.label + "  " + ((100 - bestMatch.distance * 100).toFixed(1) + "%"));
+                drawBox(canvas, face, bestMatch.label + "  " + ((100 - bestMatch.distance * 100).toFixed(1) + "%"));
                 await recognizeFace();
             }
         });
