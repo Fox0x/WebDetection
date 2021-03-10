@@ -17,12 +17,12 @@
                         <div class="col">
                             <img alt="" height="230" id="modalUserImage" src="" width="200"/>
                             <form class="mt-2" id="add-user-form">
-                                <label for="recipient-fname"></label>
+
                                 <input class="form-control mx-auto"
                                        id="recipient-fname"
                                        placeholder="First Name"
                                        type="text"/>
-                                <label for="recipient-lname"></label>
+
                                 <input class="form-control mx-auto"
                                        id="recipient-lname" placeholder="Last Name"
                                        type="text"/>
@@ -58,10 +58,11 @@
         <div class="row">
             <!-- face_detector_selection_control -->
             <div class="col">
-                <label for="model"></label><select class="model-select" id="model" onchange="changeModel()">
-                <option value="ssdMobileNetV1">ssdMobileNetV1</option>
-                <option selected value="tinyFaceDetector">tinyFaceDetector</option>
-            </select>
+
+                <select class="model-select" id="model" onchange="changeModel()">
+                    <option value="ssdMobileNetV1">ssdMobileNetV1</option>
+                    <option selected value="tinyFaceDetector">tinyFaceDetector</option>
+                </select>
             </div>
             <!--minConf selection control-->
             <div class="col">
@@ -70,12 +71,13 @@
                     <button class="" onclick="decreaseConfidence()" type="button">
                         <span class="material-icons">remove_circle_outline</span>
                     </button>
-                    <label for="confidenceOutput"></label><input disabled
-                                                                 id="confidenceOutput"
-                                                                 style="width: 60px"
-                                                                 type="text"
-                                                                 value="0.6"
-                />
+
+                    <input disabled
+                           id="confidenceOutput"
+                           style="width: 60px"
+                           type="text"
+                           value="0.6"
+                    />
                     <button class="" onclick="increaseConfidence()" type="button">
                         <span class="material-icons">add_circle_outline</span>
                     </button>
