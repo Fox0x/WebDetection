@@ -21,8 +21,8 @@ function fillSubjectList() {
 
     function createNewSubject(image, score, firstName, lastName, label, timestamp) {
         const subjectListcontainer = document.querySelector(".subject-row")
-        const col = document.createElement("div");
-        col.className = "col-2 m-3 p-0 subject-card";
+        const card = document.createElement("div");
+        card.className = "col-2 m-3 p-0 subject-card";
 
         const imgEl = document.createElement("img");
         imgEl.src = image;
@@ -40,13 +40,13 @@ function fillSubjectList() {
         acceptSubjectButton.id = "accept-" + label;
         acceptSubjectButton.className = "btn btn-outline-success btn-accept-user";
         acceptSubjectButton.innerHTML = "&#10004;&#65039;";
-        subjectListcontainer.appendChild(col);
-        col.appendChild(imgEl);
-        col.appendChild(fName);
-        col.appendChild(lName);
-        col.appendChild(document.createElement("br"));
-        col.appendChild(deleteSubjectButton);
-        col.appendChild(acceptSubjectButton);
+        subjectListcontainer.appendChild(card);
+        card.appendChild(imgEl);
+        card.appendChild(fName);
+        card.appendChild(lName);
+        card.appendChild(document.createElement("br"));
+        card.appendChild(deleteSubjectButton);
+        card.appendChild(acceptSubjectButton);
         acceptSubjectButton.onclick = () => {
 
             const fName = document.getElementById("f-name-" + label).value,
@@ -71,7 +71,7 @@ function fillSubjectList() {
                 localStorage.setItem("users", JSON.stringify(users)) : localStorage.clear();
             location.reload()
         };
-        col.appendChild;
+        card.appendChild;
     }
 }
 

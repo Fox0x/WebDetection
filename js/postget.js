@@ -84,37 +84,3 @@ async function putImage(image) {
     console.error(error);
   }
 }
-// async function putImage(imageUrl, timestamp) {
-//         let TOKEN = await getToken();
-//         getNewTaskId().then(taskId => {
-//             let URL = SERVER_URL + "processing/" + taskId
-//             console.log(URL)
-//             let requestOptions = {
-//                 method: 'PUT',
-//                 headers: {
-//                     "Authorization": TOKEN,
-//                     "Content-Type": "application/json",
-//                 },
-//                 body: JSON.stringify({
-//                     clientid: "1",
-//                     locationid: "1",
-//                     cameraid: "1",
-//                     quality: "0.5",
-//                     boundingbox: "1,1,2,2",
-//                     tracklength: "10",
-//                     observations: [],
-//                     timestamp: timestamp,
-//                     imagedata: imageUrl
-//
-//                 }),
-//                 redirect: 'follow'
-//             };
-//             fetch(URL, requestOptions)
-//                 .then(response => response.json())
-//                 .then(result => {
-//                     console.log(result);
-//                 })
-//                 .catch(error => console.log('error', error));
-//         });
-//
-// }
