@@ -161,7 +161,7 @@ async function addNewUser(face) {
             ));
         })
         //TODO: Сюда putImage();
-        await putImage(imageURL, timestamp);
+        await putImage(imageURL);
         resolve();
     });
 }
