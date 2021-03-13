@@ -1,51 +1,24 @@
-#content img {
+#visit-container img {
     width: 100px;
     height: 130px;
     padding-left: 0px;
     padding-right: 0px;
 }
 
-.col {
+#visit-container div {
     text-align: center;
     padding: 5px;
     margin-top: 10px !important;
     box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.64);
 }
 
-.col input {
+#visit-container input {
     background-color: transparent;
     border: 0px;
     color: #6c757d;
     text-align: center;
 }
 
-.col input:focus {
+#visit-container input:focus {
     outline: 0;
 }
-
-
-/* hide plaseholder when focus ========================================================*/
-:focus::-webkit-input-placeholder {
-    color: transparent;
-}
-
-:focus::-moz-placeholder {
-    color: transparent;
-}
-
-:focus:-moz-placeholder {
-    color: transparent;
-}
-
-:focus:-ms-input-placeholder {
-    color: transparent;
-}
-input::-webkit-input-placeholder       {opacity: 1; transition: opacity 0.3s ease;}
-input::-moz-placeholder                {opacity: 1; transition: opacity 0.3s ease;}
-input:-moz-placeholder                 {opacity: 1; transition: opacity 0.3s ease;}
-input:-ms-input-placeholder            {opacity: 1; transition: opacity 0.3s ease;}
-input:focus::-webkit-input-placeholder {opacity: 0; transition: opacity 0.3s ease;}
-input:focus::-moz-placeholder          {opacity: 0; transition: opacity 0.3s ease;}
-input:focus:-moz-placeholder           {opacity: 0; transition: opacity 0.3s ease;}
-input:focus:-ms-input-placeholder      {opacity: 0; transition: opacity 0.3s ease;}
-/* =============================================================================== */

@@ -20,9 +20,9 @@ function fillSubjectList() {
     users.forEach(user => createNewSubject(user.image, user.score, user.firstName, user.lastName, user.label, user.created))
 
     function createNewSubject(image, score, firstName, lastName, label, timestamp) {
-        const subjectListcontainer = document.getElementById("subjectList");
+        const subjectListcontainer = document.querySelector(".subject-row")
         const col = document.createElement("div");
-        col.className = "col-2 m-3 p-0";
+        col.className = "col-2 m-3 p-0 subject-card";
 
         const imgEl = document.createElement("img");
         imgEl.src = image;

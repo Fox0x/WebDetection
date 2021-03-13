@@ -1,4 +1,10 @@
-#content img {
+.subject-card {
+    margin-top: 10px !important;
+    width: 200px !important;
+    box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.64);
+}
+
+.subject-card img {
     width: 200px;
     height: 230px;
     padding-left: 0px;
@@ -7,83 +13,18 @@
     border-top-right-radius: 10px;
 }
 
-.col-2 {
-    margin-top: 10px !important;
-    width: 200px !important;
-    box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.64);
-}
-
-.col-2 input {
+.subject-card input {
     background-color: transparent;
     border: 0px;
     color: #6c757d;
     text-align: center;
 }
 
-.col-2 input:focus {
+.subject-card input:focus {
     outline: 0;
 }
 
-.col-2 button {
+.subject-card button {
     width: 100%;
     margin-bottom: 3px !important;
 }
-
-/* hide plaseholder when focus ========================================================*/
-:focus::-webkit-input-placeholder {
-    color: transparent;
-}
-
-:focus::-moz-placeholder {
-    color: transparent;
-}
-
-:focus:-moz-placeholder {
-    color: transparent;
-}
-
-:focus:-ms-input-placeholder {
-    color: transparent;
-}
-
-input::-webkit-input-placeholder {
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
-
-input::-moz-placeholder {
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
-
-input:-moz-placeholder {
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
-
-input:-ms-input-placeholder {
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
-
-input:focus::-webkit-input-placeholder {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-input:focus::-moz-placeholder {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-input:focus:-moz-placeholder {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-input:focus:-ms-input-placeholder {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-/* =============================================================================== */

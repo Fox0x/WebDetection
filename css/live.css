@@ -1,0 +1,67 @@
+#video {
+    border-bottom: #901612 solid 10px;
+    box-shadow: rgb(0, 0, 0) 0 10px 13px -7px, 5px 5px 15px 5px rgba(255, 255, 255, 0);
+}
+
+canvas {
+    position: absolute !important;
+}
+
+#image-list input {
+    width: 100px;
+    height: 130px;
+}
+
+.btn-outline-success {
+    width: 80px;
+}
+
+.model-select {
+    background: transparent;
+    border: 0;
+    color: #6c757d;
+    margin-left: 50%;
+}
+
+.model-select option {
+    background: #131516;
+    color: #6c757d;
+}
+
+#confidence-container button {
+    background: transparent;
+    border: 0;
+    color: #6c757d;
+    height: 30px;
+    max-width: max-content;
+}
+
+button:focus {
+    outline: transparent 0 !important;
+}
+
+#confidence-container input {
+    background: transparent;
+    color: #6c757d;
+    border: 0;
+    text-align: center;
+    height: 25px;
+    max-width: max-content;
+}
+
+#confidence-container p {
+    color: #6c757d;
+    margin-right: 20px;
+    margin-top: 0 !important;
+    width: max-content;
+
+}
+
+#confidence-container i {
+    color: #6c757d;
+}
+
+#add-user-form input {
+    width: 200px;
+    text-align: center;
+}
