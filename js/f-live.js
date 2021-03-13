@@ -1,11 +1,14 @@
 app.register.controller("LiveCtrl", function () {
     Promise.all([
-        faceapi.loadTinyFaceDetectorModel("../models"),
-        faceapi.loadFaceLandmarkModel("../models"),
-        faceapi.loadFaceRecognitionModel("../models"),
-        faceapi.loadSsdMobilenetv1Model("../models"),
-    ]);
-    loadVideo().then(recognizeFace)
+        faceapi.loadTinyFaceDetectorModel("https://gitcdn.xyz/cdn/justadudewhohacks/face-api.js/a86f011d72124e5fb93e59d5c4ab98f699dd5c9c/weights/"),
+        faceapi.loadFaceLandmarkModel("https://gitcdn.xyz/cdn/justadudewhohacks/face-api.js/a86f011d72124e5fb93e59d5c4ab98f699dd5c9c/weights/"),
+        faceapi.loadFaceRecognitionModel("https://gitcdn.xyz/cdn/justadudewhohacks/face-api.js/a86f011d72124e5fb93e59d5c4ab98f699dd5c9c/weights/"),
+        faceapi.loadSsdMobilenetv1Model("https://gitcdn.xyz/cdn/justadudewhohacks/face-api.js/a86f011d72124e5fb93e59d5c4ab98f699dd5c9c/weights/"),
+    ]).then(async () => {
+        await loadVideo();
+        await recognizeFace();
+    })
+
 })
 
 //========================================================//
@@ -75,7 +78,7 @@ async function getLabeledDescriptors() {
     return new Promise(async resolve => {
         if (labeledDescriptors.length) {
             resolve(labeledDescriptors);
-        } else if (localStorage.length) {
+        } else if (localStorage.users) {
             labeledDescriptors = [];
             users = JSON.parse(localStorage.users);
             users.forEach(user => {
@@ -126,17 +129,19 @@ async function addNewUser(face) {
     return new Promise(async resolve => {
         const firstName = document.getElementById("recipient-fname").value;
         const lastName = document.getElementById("recipient-lname").value
+        const imageURL = await extractFace(face);
+        const timestamp = (new Date).toLocaleString();
         if (!users.some(user => user.label === firstName + "_" + lastName)) {
             console.log("Add new user")
             users.push(
                 {
                     label: firstName + "_" + lastName,
-                    image: await extractFace(face),
+                    image: imageURL,
                     descriptor: [face.descriptor],
                     score: face.detection.score,
                     firstName,
                     lastName,
-                    created: (new Date).toLocaleString()
+                    created: timestamp
                 }
             );
 
@@ -155,6 +160,8 @@ async function addNewUser(face) {
                 user.descriptor
             ));
         })
+        //TODO: Сюда putImage();
+        await putImage(imageURL, timestamp);
         resolve();
     });
 }
@@ -179,8 +186,7 @@ async function recognizeFace() {
 
 //Draw canvas with any label
 function drawBox(canvas, face, label) {
-    const drawBox = new faceapi.draw.DrawBox(
-        faceapi.resizeResults(face, displaySize).detection.box, {label});
+    const drawBox = new faceapi.draw.DrawBox(face.detection.box, {label});
     drawBox.draw(canvas);
 }
 
