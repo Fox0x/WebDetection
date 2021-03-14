@@ -4,10 +4,6 @@ app.register.controller("SListCtrl", function () {
         document.getElementById("spinner").style.visibility = "hidden";
     }
     document.getElementById("content").style.visibility = "visible";
-    if (typeof videoStream !== 'undefined') {
-        video.pause();
-        videoStream.getVideoTracks()[0].stop();
-    }
     if (localStorage.length) {
         fillSubjectList();
     } else {

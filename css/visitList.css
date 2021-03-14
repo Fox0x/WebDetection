@@ -1,5 +1,7 @@
 #visit-container {
     box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.64);
+    border-radius: 10px;
+    background-color: rgba(61, 57, 57, 0.4);
 }
 
 #visit-container img {
@@ -17,7 +19,6 @@
 
 #visit-container input {
     background-color: transparent;
-    border: 0px;
     color: #6c757d;
     text-align: center;
     
