@@ -1,4 +1,4 @@
-app.register.controller("VListCtrl", function () {
+app.register.controller("VListCtrl", function ($scope) {
     if (document.getElementById("spinner") !== null) {
         document.getElementById("spinner").style.visibility = "hidden";
     }
@@ -7,4 +7,6 @@ app.register.controller("VListCtrl", function () {
         video.pause();
         videoStream.getVideoTracks()[0].stop();
     }
+
+    $scope.users = JSON.parse(localStorage.users);
 });

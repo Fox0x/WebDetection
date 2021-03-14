@@ -1,14 +1,14 @@
-<div class="visit-list">
-    <div class="row" id="visit-container">
+<div class="visit-list d-flex justify-content-center" controller="VListCtrl">
+    <div class="align-items-center d-inline-flex mt-3 mx-2 pb-2 row" id="visit-container" ng-repeat="user in users">
         <div class="col">
-            <img alt="" src="../img/user.png">
+            <img alt="" src={{user.image}}>
         </div>
         <div class="col">
-            <input disabled id="subject-fistName" placeholder="first name">
-            <input disabled id="subject-lastName" placeholder="last name">
+            <input disabled id="subject-fistName" value={{user.firstName}}>
+            <input disabled id="subject-lastName" value={{user.lastName}}>
         </div>
         <div class="col">
-            <input disabled id="subject-created" placeholder="created">
+            <input disabled id="subject-created" value={{user.created}}>
         </div>
         <div class="col">
             <img alt="" src="../img/user.png">

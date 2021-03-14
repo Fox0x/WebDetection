@@ -2,8 +2,8 @@ const SERVER_URL = "http://localhost:3010/fa6_api/";
 
 async function getToken() {
   try {
-    if (localStorage.token) {
-      return localStorage.token;
+    if (sessionStorage.token) {
+      return sessionStorage.token;
     } else {
       const request = await fetch(SERVER_URL + "authenticate", {
         method: "POST",
@@ -23,7 +23,7 @@ async function getToken() {
         "New token sucssessfully created! New token :>> ",
         data.token
       );
-      localStorage.setItem("token", data.token);
+      sessionStorage.setItem("token", data.token);
       return data.token;
     }
   } catch (error) {
@@ -54,32 +54,36 @@ async function getTaskId() {
   }
 }
 
-async function putImage(image) {
+async function putImage(image, taskId) {
   try {
-    const request = await fetch(
-      SERVER_URL + "processing/" + (await getTaskId()),
-      {
-        method: "PUT",
-        headers: {
-          Authorization: await getToken(),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          clientid: "1",
-          locationid: "1",
-          cameraid: "1",
-          quality: "0.5",
-          boundingbox: "1,1,2,2",
-          tracklength: "10",
-          observations: [],
-          timestamp: (new Date).toLocaleString(),
-          imagedata: image,
-        }),
-        redirect: "follow",
-      }
-    );
+    const userImage = image;
+    const request = await fetch(SERVER_URL + "processing/" + taskId, {
+      method: "PUT",
+      headers: {
+        Authorization: await getToken(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        clientid: "1",
+        locationid: "1",
+        cameraid: "1",
+        quality: "0.5",
+        boundingbox: "1,1,2,2",
+        tracklength: "10",
+        observations: [],
+        timestamp: new Date().toLocaleString(),
+        imagedata: image,
+      }),
+      redirect: "follow",
+    });
     const data = await request.json();
-    console.log(data)
+    /*TODO: response from putImage() */
+    // console.log(data);
+    // if (data.reply.result) {
+    //   if (data.reply.result === "process created") {
+    //     await putImage(image, data.reply.taskid);
+    //   }
+    // }
   } catch (error) {
     console.error(error);
   }
