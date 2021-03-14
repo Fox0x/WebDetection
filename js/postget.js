@@ -72,12 +72,11 @@ async function putImage(image, taskId) {
 					quality: "0.5",
 					boundingbox: "1,1,2,2",
 					tracklength: 10,
-					imagedata: "image1",
+					imagedata: image,
 				},
 			],
 		})
 	);
-	formdata.append("image1", await fetch(image).then(r => r.blob()), "/path/to/file");
 
 	let requestOptions = {
 		method: "PUT",
@@ -90,11 +89,11 @@ async function putImage(image, taskId) {
 		.then((response) => response.json())
 		.then(async (data) => {
 			console.log(data);
-			if (data.reply.result) {
-				if (data.reply.result === "process created") {
-					await putImage(image, data.reply.taskid);
-				} else console.error(data);
-			} else console.error(data);
+			// if (data.reply.result) {
+			// 	if (data.reply.result === "process created") {
+			// 		await putImage(image, data.reply.taskid);
+			// 	} else console.error(data);
+			// } else console.error(data);
 		})
 		.catch((error) => console.log("error", error));
 
