@@ -211,7 +211,7 @@ async function recognizeFace() {
                 "  " +
                 ((100 - bestMatch.distance * 100).toFixed(1) + "%")
             );
-            await putImage(await extractFace(face), users.find(user => user.label === bestMatch.label).taskId)
+            await putImage(await extractFace(face), users.find(user => user.label === bestMatch.label).taskId);
         }
     }
     await recognizeFace();
@@ -230,7 +230,7 @@ async function extractFace(face) {
         new faceapi.Rect(box.x - 70, box.y - 90, box.width + 70, box.height + 90),
     ];
     const faceCanvas = await faceapi.extractFaces(video, regionsToExtract);
-    return faceCanvas[0].toDataURL("image/png", 1.0);
+    return faceCanvas[0].toDataURL('image/jpeg', 1.0);
 }
 
 //Controllers func

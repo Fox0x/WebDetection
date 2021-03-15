@@ -78,18 +78,9 @@ async function putImage(imageBase64, taskId) {
         })
     );
 
-    // let binary = atob(imageBase64.split(',')[1]);
-    // let array = [];
-    // for(let i = 0; i < binary.length; i++) {
-    //     array.push(binary.charCodeAt(i));
-    // }
-    // const blob = new Blob([new Uint8Array(array)], {type: 'image/png'});
-    // console.log(blob)
-
     const response = await fetch(imageBase64);
     const blob = await response.blob();
-    console.log(blob)
-    const file = new File([blob], "image.png", {type: 'image/png'});
+    const file = new File([blob], "image.jpeg", {type: 'image/jpeg'});
 
     formData.append("image1", file);
 
@@ -99,14 +90,6 @@ async function putImage(imageBase64, taskId) {
         body: formData,
         redirect: "follow",
     };
-
-
-    console.log("formData entries :>>");
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ', ' + pair[1]);
-    }
-    console.log("File data :>>", window.URL.createObjectURL(file));
-
 
     fetch(SERVER_URL + "processing/" + taskId, requestOptions)
         .then((response) => response.json())
