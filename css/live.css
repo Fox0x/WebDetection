@@ -7,11 +7,6 @@ canvas {
     position: absolute !important;
 }
 
-#image-list input {
-    width: 100px;
-    height: 130px;
-}
-
 .btn-outline-success {
     width: 80px;
 }
@@ -61,7 +56,16 @@ button:focus {
     color: #6c757d;
 }
 
-#add-user-form input {
-    width: 200px;
-    text-align: center;
+#user-card-container img {
+    width: 100px;
+    height: 130px;
 }
+
+#user-card-container input {
+    width: 100%;
+    height: fit-content;
+    text-align: center;
+    background: rgba(76, 73, 73, 0.4);
+    border: none;
+}
+

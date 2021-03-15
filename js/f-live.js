@@ -1,26 +1,9 @@
-app.register.controller("LiveCtrl", function () {
-    Promise.all([
-        faceapi.loadTinyFaceDetectorModel(
-            "https://gitcdn.xyz/cdn/justadudewhohacks/face-api.js/a86f011d72124e5fb93e59d5c4ab98f699dd5c9c/weights/"
-        ),
-        faceapi.loadFaceLandmarkModel(
-            "https://gitcdn.xyz/cdn/justadudewhohacks/face-api.js/a86f011d72124e5fb93e59d5c4ab98f699dd5c9c/weights/"
-        ),
-        faceapi.loadFaceRecognitionModel(
-            "https://gitcdn.xyz/cdn/justadudewhohacks/face-api.js/a86f011d72124e5fb93e59d5c4ab98f699dd5c9c/weights/"
-        ),
-        faceapi.loadSsdMobilenetv1Model(
-            "https://gitcdn.xyz/cdn/justadudewhohacks/face-api.js/a86f011d72124e5fb93e59d5c4ab98f699dd5c9c/weights/"
-        ),
-    ]).then(async () => {
-        await loadVideo();
-        await recognizeFace();
-    });
+app.register.controller("LiveCtrl", function ($scope) {
+
+    //========================================================//
 });
 
-//========================================================//
 let video;
-let videoStream;
 let canvas;
 let minConfidence = 0.6;
 let options = new faceapi.TinyFaceDetectorOptions({
@@ -28,45 +11,45 @@ let options = new faceapi.TinyFaceDetectorOptions({
     scoreThreshold: minConfidence,
 });
 let displaySize;
+let localUsers = [];
 let users = [];
-
 //========================================================//
 
-async function loadVideo() {
-    return new Promise((resolve) => {
-        navigator.mediaDevices
-            .getUserMedia({video: true, audio: false})
-            .then((stream) => {
-                document.getElementById("content").style.visibility === "hidden" &&
-                showContent();
-                video = document.getElementById("video");
-                videoStream = stream;
-                video.srcObject = videoStream;
-                canvas = document.getElementById("canvas");
-                displaySize = {width: video.width, height: video.height};
-                canvas.style.left = video.getBoundingClientRect().x + "px";
-                faceapi.matchDimensions(canvas, displaySize);
-                video.addEventListener("playing", async () => {
-                    canvas.style.left = video.getBoundingClientRect().x + "px";
-                    resolve();
-                });
-            })
-            .catch((reason) => {
-                new bootstrap.Modal(document.getElementById("cameraAlertModal"), {
-                    backdrop: false,
-                }).show();
-            });
-    });
+new Promise(async (resolve) => {
 
-    function showContent() {
-        if (document.getElementById("spinner") !== null) {
-            document.getElementById("spinner").style.visibility = "hidden";
+    await faceapi.nets.faceRecognitionNet.loadFromUri('https://gitcdn.xyz/repo/justadudewhohacks/face-api.js/master/weights/');
+    await faceapi.nets.faceLandmark68Net.loadFromUri('https://gitcdn.xyz/repo/justadudewhohacks/face-api.js/master/weights/');
+    await faceapi.nets.ssdMobilenetv1.loadFromUri('https://gitcdn.xyz/repo/justadudewhohacks/face-api.js/master/weights/');
+    await faceapi.nets.tinyFaceDetector.loadFromUri('https://gitcdn.xyz/repo/justadudewhohacks/face-api.js/master/weights/');
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({video: true});
+        if (document.getElementById("content").style.visibility === "hidden") {
+            if (document.getElementById("spinner") !== null) {
+                document.getElementById("spinner").style.visibility = "hidden";
+            }
+            document.getElementById("content").style.visibility = "visible";
         }
-        document.getElementById("content").style.visibility = "visible";
+        video = document.getElementById("video");
+        video.srcObject = stream;
+        displaySize = {width: video.width, height: video.height};
+        canvas = document.getElementById("canvas");
+        canvas.style.left = video.getBoundingClientRect().x + "px";
+        faceapi.matchDimensions(canvas, displaySize);
+        video.addEventListener('play', event => {
+            resolve();
+        });
+    } catch (e) {
+        console.error(e);
+        // new bootstrap.Modal(document.getElementById("cameraAlertModal"), {
+        //     backdrop: false,
+        // }).show();
     }
-}
+}).then(async () => {
+    await recognizeFace();
+});
 
-async function getDetections() {
+const getDetections = async function () {
     let detections = [];
     while (detections.length === 0) {
         detections = faceapi.resizeResults(
@@ -80,138 +63,72 @@ async function getDetections() {
             canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         }
     }
+    console.log(detections)
     return detections;
 }
 
-async function getLabeledDescriptors() {
+const getLabeledDescriptors = async function () {
     return new Promise(async (resolve) => {
         if (labeledDescriptors.length) {
+            console.log("Labeled descriptors exist locally")
             resolve(labeledDescriptors);
         } else if (localStorage.users) {
-            labeledDescriptors = [];
-            users = JSON.parse(localStorage.users);
-            users.forEach((user) => {
+            console.log("Loading labeled descriptors from localStorage")
+            const storage = JSON.stringify(localStorage.users)
+            for await (const user of storage) {
                 user.descriptor.forEach((descriptor, index) => {
                     user.descriptor[index] = Float32Array.from(Object.values(descriptor));
                 });
-            });
-            users.forEach((user) => {
-                labeledDescriptors.push(
-                    new faceapi.LabeledFaceDescriptors(
-                        user.firstName + " " + user.lastName,
-                        user.descriptor
-                    )
-                );
-            });
+            }
+            for await (const user of storage) {
+                labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(user.id.toString(), user.descriptor));
+            }
+            console.log(labeledDescriptors);
             resolve(labeledDescriptors);
         } else {
+            console.log("Creating labeled descriptors");
             const detections = await getDetections();
-            for await (let face of detections) {
-                await showAddNewUserModal(await extractFace(face))
-                    .then(async () => {
-                        await addNewUser(face);
-                        await recognizeFace();
-                    }).catch(async () => {
-                        await recognizeFace();
-                    });
-            }
-
-        }
-    });
-}
-
-async function showAddNewUserModal(faceImage) {
-    const addUserModal = new bootstrap.Modal(
-        document.getElementById("addUserModal"),
-        {
-            backdrop: false,
-        }
-    );
-    return new Promise(async (resolve, reject) => {
-        video.pause();
-        addUserModal.show();
-        document.getElementById("modalUserImage").src = faceImage;
-        document
-            .getElementById("acceptUserButton")
-            .addEventListener("click", () => {
-                addUserModal.hide();
-                video.play();
-                resolve();
-            });
-        document
-            .getElementById("rejectUserButton")
-            .addEventListener("click", async () => {
-                addUserModal.hide();
-                video.play();
-                reject();
-            });
-    });
-}
-
-async function addNewUser(face) {
-    return new Promise(async (resolve) => {
-        const firstName = document.getElementById("recipient-fname").value;
-        const lastName = document.getElementById("recipient-lname").value;
-        const imageURL = await extractFace(face);
-        const timestamp = new Date().toLocaleString();
-        if (!users.some((user) => user.label === firstName + " " + lastName)) {
-            console.log("Add new user");
-            const user = {
-                label: firstName + " " + lastName,
-                image: imageURL,
-                descriptor: [face.descriptor],
-                score: face.detection.score,
-                firstName,
-                lastName,
-                created: timestamp,
-                taskId: await getTaskId(),
-            };
-            users.push(user);
-        } else {
-            console.log("User exists");
-            let descriptor = users.find(
-                (user) => user.label === firstName + " " + lastName
-            )["descriptor"];
-            descriptor.push(face.descriptor);
-            users.find((user) => user.label === firstName + " " + lastName)[
-                "descriptor"
-                ] = descriptor;
-        }
-        console.log("Save users to localStorage");
-        localStorage.setItem("users", JSON.stringify(users));
-        console.log("Update labeledDescriptors");
-        for await (const user of users) {
-            labeledDescriptors.push(
-                new faceapi.LabeledFaceDescriptors(
-                    user.firstName + " " + user.lastName,
-                    user.descriptor
+            for await (const face of detections) {
+                await addNewUser(face);
+                labeledDescriptors.push(
+                    new faceapi.LabeledFaceDescriptors((labeledDescriptors.length + 1).toString(), [face.descriptor])
                 )
-            );
+            }
+            resolve(labeledDescriptors);
         }
-        resolve();
     });
 }
+let i = 1;
+const addNewUser = async function (face) {
+    const userFace = await extractFace(face);
+    localUsers.push({
+        image: userFace,
+        descriptor: [face.descriptor],
+        score: face.detection.score,
+        timestamp: (new Date).toLocaleString(),
+        id: (localUsers.length)
+    });
+    document.querySelector("div#user-card-" + i + " img").src = userFace;
+    document.querySelector("div#user-card-" + i + " img").alt = JSON.stringify({
+        image: userFace,
+        descriptor: [face.descriptor],
+        score: face.detection.score,
+        timestamp: (new Date).toLocaleString(),
+        id: (localUsers.length)
+    })
+    i <= 3 ? i++ : i = 1;
+}
 
-async function recognizeFace() {
-    const labeledDescriptors = await getLabeledDescriptors();
-    const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
+// noinspection InfiniteRecursionJS
+const recognizeFace = async function () {
+    console.log('recognizing face')
+    const faceMatcher = await new faceapi.FaceMatcher(await getLabeledDescriptors());
     const detections = await getDetections();
     for await (const face of detections) {
         let bestMatch = faceMatcher.findBestMatch(face.descriptor, 0.5);
+        await drawBox(canvas, face, "score: " + face.detection.score.toFixed(2) + " " + "trackerId: " + bestMatch.label);
         if (bestMatch.label === "unknown") {
-            await showAddNewUserModal(await extractFace(face), face.detection.score).then(
-                async () => {
-                    await addNewUser(face);
-                }
-            ).catch(async () => {
-                await recognizeFace()
-            });
-        } else {
-            drawBox(canvas, face, bestMatch.label +
-                "  " +
-                ((100 - bestMatch.distance * 100).toFixed(1) + "%")
-            );
-            await putImage(await extractFace(face), users.find(user => user.label === bestMatch.label).taskId);
+
         }
     }
     await recognizeFace();
@@ -234,19 +151,19 @@ async function extractFace(face) {
 }
 
 //Controllers func
-function increaseConfidence() {
+const increaseConfidence = function () {
     minConfidence = Math.min(faceapi.utils.round(minConfidence + 0.1), 0.9);
     document.getElementById("confidenceOutput").value = minConfidence;
     changeModel();
 }
 
-function decreaseConfidence() {
+const decreaseConfidence = function () {
     minConfidence = Math.max(faceapi.utils.round(minConfidence - 0.1), 0.1);
     document.getElementById("confidenceOutput").value = minConfidence;
     changeModel();
 }
 
-function changeModel() {
+const changeModel = function () {
     let model = document.getElementById("model");
     model.value === "tinyFaceDetector"
         ? (options = new faceapi.TinyFaceDetectorOptions({
@@ -265,4 +182,16 @@ function changeModel() {
     );
 }
 
-//========================================================//
+const submit = async function (id) {
+    const user = document.querySelector("div#user-card-" + id + " img").alt
+    this.users.push({
+        fName: document.querySelector("div#user-card-" + id + " input")[0].value,
+        lName: document.querySelector("div#user-card-" + id + " input")[1].value,
+        image: user.image,
+        descriptor: user.descriptor,
+        score: user.score,
+        timestamp: user.timestamp,
+        id: user.id
+    })
+    localStorage.setItem("users", JSON.stringify(users));
+}

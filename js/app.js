@@ -1,5 +1,6 @@
 let labeledDescriptors = [];
 let app = angular.module("WebDetections", ["ui.router", "oc.lazyLoad"]);
+// noinspection JSValidateTypes
 app.config(function ($stateProvider, $urlRouterProvider, $controllerProvider) {
 	$urlRouterProvider.otherwise("/live");
 

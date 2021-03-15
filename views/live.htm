@@ -1,104 +1,104 @@
-<div class="container" id="live">
-	<!-- addUserModal -->
-	<div class="modal fade" id="addUserModal" tabindex="-1">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">New person fond!</h5>
-				</div>
-				<div class="modal-body" style="text-align: center">
-					<p>Add this user?</p>
-					<div class="row">
-						<div class="col">
-							<img alt="" height="230" id="modalUserImage" src="" width="200" />
-							<form class="mt-2" id="add-user-form">
-								<input
-									class="form-control mx-auto"
-									id="recipient-fname"
-									placeholder="First Name"
-									type="text"
-								/>
+<div class="container" id="live" ng-controller="LiveCtrl">
+    <!-- ======================================================= -->
+    <div class="container" style="text-align: center">
+        <!--PLAYER-->
+        <div class="row">
+            <div class="col-7 mt-4" id="video-container">
+                <video autoplay height="550" id="video" muted playsinline preload="auto" width="720"></video>
+                <canvas id="canvas"></canvas>
+            </div>
+            <div class="col-3 mt-4" id="user-card-container">
+                <!--*1-->
+                <div class="row d-flex  mb-2" id="user-card-1">
+                    <div class="row">
+                        <div class="col px-1">
+                            <img src="../img/user.png">
+                        </div>
+                        <div class="col px-1">
+                            <input class="mt-4" placeholder="First name"><br>
+                            <input class="mt-4" placeholder="Last name">
+                        </div>
+                    </div>
+                    <div class="row d-flex ">
+                        <div class="col mt-1 mb-2">
+                            <button class="btn btn-success" onclick="submit(1)" style="width: 100%" type="button">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-								<input
-									class="form-control mx-auto"
-									id="recipient-lname"
-									placeholder="Last Name"
-									type="text"
-								/>
-							</form>
-						</div>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button
-						class="btn btn-secondary"
-						data-bs-dismiss="modal"
-						id="rejectUserButton"
-						type="button"
-					>
-						Close
-					</button>
-					<button class="btn btn-primary" id="acceptUserButton" type="button">
-						Save changes
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- ======================================================= -->
-	<div class="container" style="text-align: center">
-		<!--PLAYER-->
-		<div class="row">
-			<div class="col mt-4">
-				<video
-						autoplay
-						height="550"
-						id="video"
-						muted
-						playsinline
-						preload="auto"
-						width="720"
-				></video>
-				<canvas id="canvas"></canvas>
-			</div>
-			<div class="col">
-				<div class="row">
-					<div class="col">
-						<img src="../img/user.png">
-						<input>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- CONTROLLERS -->
-		<div class="row">
-			<!-- face_detector_selection_control -->
-			<div class="col">
-				<select class="model-select" id="model" onchange="changeModel()">
-					<option value="ssdMobileNetV1">ssdMobileNetV1</option>
-					<option selected value="tinyFaceDetector">tinyFaceDetector</option>
-				</select>
-			</div>
-			<!--minConf selection control-->
-			<div class="col">
-				<div class="row" id="confidence-container">
-					<p style="width: fit-content">Min confidence</p>
-					<button class="" onclick="decreaseConfidence()" type="button">
-						<span class="material-icons">remove_circle_outline</span>
-					</button>
+                <!--2-->
+                <div class="row d-flex  mb-2" id="user-card-2">
+                    <div class="row">
+                        <div class="col px-1">
+                            <img src="../img/user.png">
+                        </div>
+                        <div class="col px-1">
+                            <input class="mt-4" placeholder="First name"><br>
+                            <input class="mt-4" placeholder="Last name">
+                        </div>
+                    </div>
+                    <div class="row d-flex ">
+                        <div class="col mt-1 mb-2">
+                            <button class="btn btn-success" onclick="submit(2)" style="width: 100%" type="button">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-					<input
-						disabled
-						id="confidenceOutput"
-						style="width: 60px"
-						type="text"
-						value="0.6"
-					/>
-					<button class="" onclick="increaseConfidence()" type="button">
-						<span class="material-icons">add_circle_outline</span>
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
+                <!--*3-->
+                <div class="row d-flex  mb-2" id="user-card-3">
+                    <div class="row">
+                        <div class="col px-1">
+                            <img src="../img/user.png">
+                        </div>
+                        <div class="col px-1">
+                            <input class="mt-4" placeholder="First name"><br>
+                            <input class="mt-4" placeholder="Last name">
+                        </div>
+                    </div>
+                    <div class="row d-flex ">
+                        <div class="col mt-1 mb-2">
+                            <button class="btn btn-success" onclick="submit(3)" style="width: 100%" type="button">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- CONTROLLERS -->
+            <div class="row">
+                <!-- face_detector_selection_control -->
+                <div class="col">
+                    <select class="model-select" id="model" onchange="changeModel()">
+                        <option value="ssdMobileNetV1">ssdMobileNetV1</option>
+                        <option selected value="tinyFaceDetector">tinyFaceDetector</option>
+                    </select>
+                </div>
+                <!--minConf selection control-->
+                <div class="col">
+                    <div class="row" id="confidence-container">
+                        <p style="width: fit-content">Min confidence</p>
+                        <button class="" onclick="decreaseConfidence()" type="button">
+                            <span class="material-icons">remove_circle_outline</span>
+                        </button>
+
+                        <input
+                                disabled
+                                id="confidenceOutput"
+                                style="width: 60px"
+                                type="text"
+                                value="0.6"
+                        />
+                        <button class="" onclick="increaseConfidence()" type="button">
+                            <span class="material-icons">add_circle_outline</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
