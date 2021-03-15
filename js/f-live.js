@@ -105,16 +105,17 @@ async function getLabeledDescriptors() {
             });
             resolve(labeledDescriptors);
         } else {
-            getDetections().then(async (detections) => {
-                for await (let face of detections) {
-                    showAddNewUserModal(await extractFace(face))
-                        .then(async () => {
-                            await addNewUser(face);
-                        }).catch(() => {
-                        recognizeFace();
+            const detections = await getDetections();
+            for await (let face of detections) {
+                await showAddNewUserModal(await extractFace(face))
+                    .then(async () => {
+                        await addNewUser(face);
+                        await recognizeFace();
+                    }).catch(async () => {
+                        await recognizeFace();
                     });
-                }
-            });
+            }
+
         }
     });
 }
@@ -179,14 +180,14 @@ async function addNewUser(face) {
         console.log("Save users to localStorage");
         localStorage.setItem("users", JSON.stringify(users));
         console.log("Update labeledDescriptors");
-        users.forEach((user) => {
+        for await (const user of users) {
             labeledDescriptors.push(
                 new faceapi.LabeledFaceDescriptors(
                     user.firstName + " " + user.lastName,
                     user.descriptor
                 )
             );
-        });
+        }
         resolve();
     });
 }
@@ -195,23 +196,22 @@ async function recognizeFace() {
     const labeledDescriptors = await getLabeledDescriptors();
     const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
     const detections = await getDetections();
-    for (const face of detections) {
+    for await (const face of detections) {
         let bestMatch = faceMatcher.findBestMatch(face.descriptor, 0.5);
         if (bestMatch.label === "unknown") {
-            showAddNewUserModal(await extractFace(face), face.detection.score).then(
+            await showAddNewUserModal(await extractFace(face), face.detection.score).then(
                 async () => {
                     await addNewUser(face);
                 }
-            );
+            ).catch(async () => {
+                await recognizeFace()
+            });
         } else {
-            await putImage(await extractFace, users.find(user => user.label === bestMatch.label).taskId)
-            drawBox(
-                canvas,
-                face,
-                bestMatch.label +
+            drawBox(canvas, face, bestMatch.label +
                 "  " +
                 ((100 - bestMatch.distance * 100).toFixed(1) + "%")
             );
+            await putImage(await extractFace(face), users.find(user => user.label === bestMatch.label).taskId)
         }
     }
     await recognizeFace();
