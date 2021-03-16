@@ -1,6 +1,7 @@
 .navbar {
     background-color: #131516;
-    box-shadow: rgb(0, 0, 0) 0 10px 13px -7px, 5px 5px 15px 5px rgba(255, 255, 255, 0);}
+    box-shadow: rgb(0, 0, 0) 0 10px 13px -7px, 5px 5px 15px 5px rgba(255, 255, 255, 0);
+}
 
 .navbar a {
     color: #6c757d !important;
@@ -27,7 +28,13 @@
     color: #6c757d;
 }
 
-/* hide plaseholder when focus ========================================================*/
+/*Hide scrollbar ========================================================*/
+::-webkit-scrollbar {
+    color: transparent;
+    max-width: 0;
+}
+
+/* hide placeholder when focus ========================================================*/
 :focus::-webkit-input-placeholder {
     color: transparent;
 }
@@ -43,12 +50,45 @@
 :focus:-ms-input-placeholder {
     color: transparent;
 }
-input::-webkit-input-placeholder       {opacity: 1; transition: opacity 0.3s ease;}
-input::-moz-placeholder                {opacity: 1; transition: opacity 0.3s ease;}
-input:-moz-placeholder                 {opacity: 1; transition: opacity 0.3s ease;}
-input:-ms-input-placeholder            {opacity: 1; transition: opacity 0.3s ease;}
-input:focus::-webkit-input-placeholder {opacity: 0; transition: opacity 0.3s ease;}
-input:focus::-moz-placeholder          {opacity: 0; transition: opacity 0.3s ease;}
-input:focus:-moz-placeholder           {opacity: 0; transition: opacity 0.3s ease;}
-input:focus:-ms-input-placeholder      {opacity: 0; transition: opacity 0.3s ease;}
+
+input::-webkit-input-placeholder {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+input::-moz-placeholder {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+input:-moz-placeholder {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+input:-ms-input-placeholder {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+input:focus::-webkit-input-placeholder {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+input:focus::-moz-placeholder {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+input:focus:-moz-placeholder {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+input:focus:-ms-input-placeholder {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
 /* =============================================================================== */

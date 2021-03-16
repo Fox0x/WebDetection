@@ -1,4 +1,6 @@
 const SERVER_URL = "http://localhost:3010/fa6_api/";
+const EMAIL = "Admin@Admin";
+const PASSWORD = "@@@dmin";
 
 async function getToken() {
     try {
@@ -11,18 +13,15 @@ async function getToken() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    email: "Admin@Admin",
-                    password: "@@@dmin",
+                    email: EMAIL,
+                    password: PASSWORD,
                     clientid: "1",
                     locationid: "1",
                 }),
                 redirect: "follow",
             });
             const data = await request.json();
-            console.log(
-                "New token sucssessfully created! New token :>> ",
-                data.token
-            );
+            console.log("New token sucssessfully created! New token :>> ", data.token);
             sessionStorage.setItem("token", data.token);
             return data.token;
         }
@@ -54,35 +53,28 @@ async function getTaskId() {
     }
 }
 
-async function putImage(imageBase64, taskId) {
+async function putImage(canvas, taskId) {
     let myHeaders = new Headers();
     myHeaders.append("Authorization", await getToken());
     myHeaders.append("Content-Type", "multipart/form-data");
 
     let formData = new FormData();
-    formData.append(
-        "POST",
-        JSON.stringify({
-            clientid: 1,
-            locationid: 1,
-            observations: [
-                {
-                    timestamp: new Date().toLocaleString(),
-                    cameraid: 1,
-                    quality: "0.5",
-                    boundingbox: "1,1,2,2",
-                    tracklength: 10,
-                    imagedata: "image1",
-                },
-            ],
-        })
-    );
+    formData.append("POST", JSON.stringify({
+        clientid: 1,
+        locationid: 1,
+        observations: [
+            {
+                timestamp: new Date().toLocaleString(),
+                cameraid: 1,
+                quality: "0.5",
+                boundingbox: "1,1,2,2",
+                tracklength: 10,
+                imagedata: "image1",
+            },
+        ],
+    }));
+    formData.append("image1", canvas.toDataURL('image/jpeg', 1.0))
 
-    const response = await fetch(imageBase64);
-    const blob = await response.blob();
-    const file = new File([blob], "image.jpeg", {type: 'image/jpeg'});
-
-    formData.append("image1", file);
 
     let requestOptions = {
         method: "PUT",
@@ -93,7 +85,7 @@ async function putImage(imageBase64, taskId) {
 
     fetch(SERVER_URL + "processing/" + taskId, requestOptions)
         .then((response) => response.json())
-        .then(async (data) => {
-            //
+        .then((data) => {
+            console.log(data)
         }).catch((error) => console.error("error", error));
 }

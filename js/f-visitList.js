@@ -7,6 +7,4 @@ app.register.controller("VListCtrl", function ($scope) {
         video.pause();
         videoStream.getVideoTracks()[0].stop();
     }
-
-    $scope.users = JSON.parse(localStorage.users);
 });

@@ -13,61 +13,17 @@ app.register.controller("SListCtrl", function () {
 
 function fillSubjectList() {
     const users = JSON.parse(localStorage.users);
-    users.forEach(user => createNewSubject(user.image, user.score, user.firstName, user.lastName, user.label, user.created))
+    users.forEach(user => createNewSubject(user.image, user.fName, user.lName))
 
-    function createNewSubject(image, score, firstName, lastName, label, timestamp) {
-        const subjectListcontainer = document.querySelector(".subject-row")
-        const card = document.createElement("div");
-        card.className = "col-2 m-3 p-0 subject-card";
-
-        const imgEl = document.createElement("img");
-        imgEl.src = image;
-        const fName = document.createElement("input");
-        fName.id = "f-name-" + label;
-        fName.placeholder = firstName || timestamp;
-        const lName = document.createElement("input");
-        lName.id = "l-name-" + label;
-        lName.placeholder = lastName || "score: " + score;
-        const deleteSubjectButton = document.createElement("button");
-        deleteSubjectButton.id = "delete-" + label;
-        deleteSubjectButton.className = "btn btn-outline-danger";
-        deleteSubjectButton.innerHTML = "&#10006";
-        const acceptSubjectButton = document.createElement("button");
-        acceptSubjectButton.id = "accept-" + label;
-        acceptSubjectButton.className = "btn btn-outline-success btn-accept-user";
-        acceptSubjectButton.innerHTML = "&#10004;&#65039;";
-        subjectListcontainer.appendChild(card);
-        card.appendChild(imgEl);
-        card.appendChild(fName);
-        card.appendChild(lName);
-        card.appendChild(document.createElement("br"));
-        card.appendChild(deleteSubjectButton);
-        card.appendChild(acceptSubjectButton);
-        acceptSubjectButton.onclick = () => {
-
-            const fName = document.getElementById("f-name-" + label).value,
-                fName_ph = document.getElementById("f-name-" + label).getAttribute("placeholder");
-            users.find(user => user.label === label).firstName = fName || fName_ph;
-
-            const lName = document.getElementById("l-name-" + label).value,
-                lName_ph = document.getElementById("l-name-" + label).getAttribute("placeholder");
-            users.find(user => user.label === label).lastName = lName || lName_ph;
-
-            users.find(user => user.label).label = ((fName || users) + "_" + (lName || lName_ph));
-            localStorage.setItem("users", JSON.stringify(users));
-            location.reload();
-        }
-
-        deleteSubjectButton.onclick = () => {
-            const index = users.indexOf(users.find(user => user.label === label));
-            if (index > -1) {
-                users.splice(index, 1);
-            }
-            users.length ?
-                localStorage.setItem("users", JSON.stringify(users)) : localStorage.clear();
-            location.reload()
-        };
-        card.appendChild;
+    function createNewSubject(image, firstName, lastName) {
+        document.querySelector(".subject-row").innerHTML += '' +
+            '<div class="col-2 m-3 p-0 subject-card">\n' +
+            '        <img src="' + image + '">\n' +
+            '        <input placeholder="' + firstName + '">\n' +
+            '        <input placeholder="' + lastName + '">\n' +
+            '        <button class="btn btn-outline-success">&#10004;&#65039;</button>\n' +
+            '        <button class="btn btn-outline-danger">&#10006</button>\n' +
+            '    </div>'
     }
 }
 

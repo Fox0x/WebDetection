@@ -1,13 +1,13 @@
-<div class="container" id="live" ng-controller="LiveCtrl">
+<div class="container" id="live">
     <!-- ======================================================= -->
     <div class="container" style="text-align: center">
         <!--PLAYER-->
         <div class="row">
-            <div class="col-7 mt-4" id="video-container">
-                <video autoplay height="550" id="video" muted playsinline preload="auto" width="720"></video>
+            <div class="col-8 mt-4" id="video-container">
+                <video autoplay height="600" id="video" muted playsinline preload="auto" width="790"></video>
                 <canvas id="canvas"></canvas>
             </div>
-            <div class="col-3 mt-4" id="user-card-container">
+            <div class="col-4 mt-4" id="user-card-container">
                 <!--*1-->
                 <div class="row d-flex  mb-2" id="user-card-1">
                     <div class="row">
@@ -17,13 +17,10 @@
                         <div class="col px-1">
                             <input class="mt-4" placeholder="First name"><br>
                             <input class="mt-4" placeholder="Last name">
-                        </div>
-                    </div>
-                    <div class="row d-flex ">
-                        <div class="col mt-1 mb-2">
-                            <button class="btn btn-success" onclick="submit(1)" style="width: 100%" type="button">
-                                Submit
-                            </button>
+                            <div class="col mt-2 d-flex justify-content-between">
+                                <button class=" m-1 btn btn-success" onclick="submit(1)" type="button">Submit</button>
+                                <button class=" m-1 btn btn-danger" onclick="reject(1)" type="button">Reject</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -37,13 +34,10 @@
                         <div class="col px-1">
                             <input class="mt-4" placeholder="First name"><br>
                             <input class="mt-4" placeholder="Last name">
-                        </div>
-                    </div>
-                    <div class="row d-flex ">
-                        <div class="col mt-1 mb-2">
-                            <button class="btn btn-success" onclick="submit(2)" style="width: 100%" type="button">
-                                Submit
-                            </button>
+                            <div class="col mt-2 d-flex justify-content-between">
+                                <button class=" m-1 btn btn-success" onclick="submit(2)" type="button">Submit</button>
+                                <button class=" m-1 btn btn-danger" onclick="reject(2)" type="button">Reject</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -57,13 +51,10 @@
                         <div class="col px-1">
                             <input class="mt-4" placeholder="First name"><br>
                             <input class="mt-4" placeholder="Last name">
-                        </div>
-                    </div>
-                    <div class="row d-flex ">
-                        <div class="col mt-1 mb-2">
-                            <button class="btn btn-success" onclick="submit(3)" style="width: 100%" type="button">
-                                Submit
-                            </button>
+                            <div class="col mt-2 d-flex justify-content-between">
+                                <button class=" m-1 btn btn-success" onclick="submit(3)" type="button">Submit</button>
+                                <button class=" m-1 btn btn-danger" onclick="reject(3)" type="button">Reject</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -91,7 +82,7 @@
                                 id="confidenceOutput"
                                 style="width: 60px"
                                 type="text"
-                                value="0.6"
+                                value="0.7"
                         />
                         <button class="" onclick="increaseConfidence()" type="button">
                             <span class="material-icons">add_circle_outline</span>
