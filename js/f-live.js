@@ -75,9 +75,9 @@ const getLabeledDescriptors = async function () {
             // console.log("Labeled descriptors exist locally")
             resolve(labeledDescriptors);
         } else if (localUsers.length) {
-            for await(user of localUsers) {
+            for await(let user of localUsers) {
                 labeledDescriptors.push(
-                    new faceapi.LabeledFaceDescriptors("trackerId: " + localUsers.length, [Float32Array.from(Object.values(face.descriptor))])
+                    new faceapi.LabeledFaceDescriptors("trackerId: " + localUsers.length, [Float32Array.from(Object.values(user.descriptor))])
                 )
             }
             resolve(labeledDescriptors);
