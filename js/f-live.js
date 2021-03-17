@@ -74,11 +74,9 @@ const getLabeledDescriptors = async function () {
         if (labeledDescriptors.length) {
             // console.log("Labeled descriptors exist locally")
             resolve(labeledDescriptors);
-        } else if (localUsers.length) {
-            for await(let user of localUsers) {
-                labeledDescriptors.push(
-                    new faceapi.LabeledFaceDescriptors("trackerId: " + localUsers.length, [Float32Array.from(Object.values(user.descriptor))])
-                )
+        } else if (globalUsers.length) {
+            for await(let user of globalUsers) {
+                labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(user.fName + " " + user.lName, [Float32Array.from(Object.values(user.descriptor))]))
             }
             resolve(labeledDescriptors);
 
@@ -199,12 +197,18 @@ const submit = async function (id) {
     await localStorage.setItem("users", JSON.stringify(globalUsers));
     labeledDescriptors = [];
     await getLabeledDescriptors();
+    document.querySelector("div#user-card-" + id + " img").src = "./img/user.png"
+    document.querySelectorAll("div#user-card-" + id + " input")[0].value = "";
+    document.querySelectorAll("div#user-card-" + id + " input")[1].value = "";
 
 }
 
 const reject = async function (id) {
     console.log(id)
     localUsers.splice(id - 1, 1);
+    i--;
     labeledDescriptors = [];
     document.querySelector("div#user-card-" + id + " img").src = "./img/user.png"
+    document.querySelectorAll("div#user-card-" + id + " input")[0].value = "";
+    document.querySelectorAll("div#user-card-" + id + " input")[1].value = "";
 }
