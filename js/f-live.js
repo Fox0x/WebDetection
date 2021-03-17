@@ -199,7 +199,6 @@ const submit = async function (id) {
 }
 
 const reject = async function (id) {
-    console.log(id)
     localUsers.splice(id - 1, 1);
     i--;
     labeledDescriptors = [];
