@@ -129,7 +129,7 @@ const recognizeFace = async function () {
     const detections = await getDetections();
     for await (let face of detections) {
         let bestMatch = faceMatcher.findBestMatch(face.descriptor, 0.5);
-        await drawBox(canvas, face, "score: " + face.detection.score.toFixed(2) + " " + bestMatch.label + " ");
+        drawBox(canvas, face, "score: " + face.detection.score.toFixed(2) + " " + bestMatch.label + " ");
         if (bestMatch.label === "unknown") {
             await addNewUser(face);
         }
@@ -141,7 +141,7 @@ const recognizeFace = async function () {
     await recognizeFace();
 }
 
-//Draw canvas with any label
+//Draw canvas with any label 
 function drawBox(canvas, face, label) {
     const drawBox = new faceapi.draw.DrawBox(face.detection.box, {label});
     drawBox.draw(canvas);
@@ -181,12 +181,7 @@ const changeModel = function () {
             minConfidence,
             maxResults: 10,
         }));
-    console.log(
-        "Model " +
-        options._name +
-        " with confidence " +
-        (options._minConfidence || options._scoreThreshold)
-    );
+    console.log("Model " + options._name + " with confidence " +(options._minConfidence || options._scoreThreshold));
 }
 
 const submit = async function (id) {
@@ -194,7 +189,7 @@ const submit = async function (id) {
     currentUser.fName = document.querySelectorAll("div#user-card-" + id + " input")[0].value
     currentUser.lName = document.querySelectorAll("div#user-card-" + id + " input")[1].value
     await globalUsers.push(currentUser);
-    await localStorage.setItem("users", JSON.stringify(globalUsers));
+    localStorage.setItem("users", JSON.stringify(globalUsers));
     labeledDescriptors = [];
     await getLabeledDescriptors();
     document.querySelector("div#user-card-" + id + " img").src = "./img/user.png"
