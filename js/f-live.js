@@ -141,7 +141,7 @@ const recognizeFace = async function () {
     await recognizeFace();
 }
 
-//Draw canvas with any label
+//Draw canvas with any label 
 function drawBox(canvas, face, label) {
     const drawBox = new faceapi.draw.DrawBox(face.detection.box, {label});
     drawBox.draw(canvas);
@@ -181,12 +181,7 @@ const changeModel = function () {
             minConfidence,
             maxResults: 10,
         }));
-    console.log(
-        "Model " +
-        options._name +
-        " with confidence " +
-        (options._minConfidence || options._scoreThreshold)
-    );
+    console.log("Model " + options._name + " with confidence " +(options._minConfidence || options._scoreThreshold));
 }
 
 const submit = async function (id) {

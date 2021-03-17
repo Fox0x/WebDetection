@@ -28,6 +28,8 @@ canvas {
     border: 0;
     color: #6c757d;
     height: 30px;
+    max-width: -webkit-max-content;
+    max-width: -moz-max-content;
     max-width: max-content;
 }
 
@@ -41,6 +43,8 @@ button:focus {
     border: 0;
     text-align: center;
     height: 25px;
+    max-width: -webkit-max-content;
+    max-width: -moz-max-content;
     max-width: max-content;
 }
 
@@ -48,6 +52,8 @@ button:focus {
     color: #6c757d;
     margin-right: 20px;
     margin-top: 0 !important;
+    width: -webkit-max-content;
+    width: -moz-max-content;
     width: max-content;
 
 }
@@ -63,6 +69,8 @@ button:focus {
 
 #user-card-container input {
     width: 100%;
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
     height: fit-content;
     text-align: center;
     background: rgba(76, 73, 73, 0.4);
